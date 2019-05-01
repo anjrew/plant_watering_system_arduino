@@ -1,42 +1,51 @@
-////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
                    /// ARDUINO SOIL MOISTURE        
                                     
 // https://github.com/earyzhe/plant_watering_system_arduino 
      
-/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 class Module{
     public:
-      Module(int, int, char, int);
+      Module(int, int, char, int, int);
       int pin;
       int value;
       String id;
       int moistureSetting;
+      int servoPin;
 };
 
-Module::Module (int a, int b, char c, int d) {
+/// Constructor for each module
+Module::Module (int a, int b, char c, int d, int e) {
   pin = a;
   value = b;
   id = c;
-  moistureSetting= d;
+  moistureSetting = d;
+  servoPin = e;
 }
 
 int moduleCount = 7;
+int pumpPin = 13;
+
 Module modules[8] = {
-    
-        Module(A0,0,'1', 100),
-        Module(A1,0,'2', 50),
-        Module(A2,0,'3', 50),
-        Module(A3,0,'4', 50),
-        Module(A4,0,'5', 50),
-        Module(A5,0,'6', 50),
-        Module(A6,0,'7', 50),
-        Module(A7,0,'8', 50),    
+        Module(A0,0,'1', 100, 2),
+        Module(A1,0,'2', 50, 3),
+        Module(A2,0,'3', 50, 4),
+        Module(A3,0,'4', 50, 5),
+        Module(A4,0,'5', 50, 6),
+        Module(A5,0,'6', 50, 7),
+        Module(A6,0,'7', 50, 8),
+        Module(A7,0,'8', 50, 9),    
     } ;
 
 
 void setup() {
     Serial.begin(9600);
+    // Initialise pins
+    for (int i = 2; i <= 10; i++) {
+        pinMode(i, OUTPUT);
+    }
+    pinMode(pumpPin,OUTPUT);
 }
 
 void loop() {
@@ -49,9 +58,14 @@ void loop() {
         currentModule.value = convertToPercent(analogRead(currentModule.pin));
 
         if (currentModule.value < currentModule.moistureSetting){
-
-          Serial.print("Watering...\n");
-         }
+            digitalWrite(currentModule.servoPin, HIGH);
+            digitalWrite(pumpPin, HIGH);
+            Serial.print("Watering...\n");
+        }
+        else{
+            digitalWrite(currentModule.servoPin, LOW);
+            digitalWrite(pumpPin, LOW);
+        }
         
         printValueToSerial(currentModule.value);
         printSetting(currentModule.moistureSetting);
@@ -61,7 +75,7 @@ void loop() {
 
 int convertToPercent(int sensorValue){
     int percentValue = 0;
-    percentValue = map(sensorValue, 623, 323, 0, 100);
+    percentValue = map(sensorValue, 622, 323, 0, 100);
     return percentValue;
 }
 
