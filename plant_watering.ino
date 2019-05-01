@@ -1,8 +1,9 @@
-//////////////////////////////////////////////
-  //        ARDUINO SOIL MOISTURE        //
- //                                          //
-//           http://www.educ8s.tv           //
-/////////////////////////////////////////////
+////////////////////////////////////////////////////////
+                   /// ARDUINO SOIL MOISTURE        
+                                    
+// https://github.com/earyzhe/plant_watering_system_arduino 
+     
+/////////////////////////////////////////////////////////
 
 class Module{
     public:
@@ -13,16 +14,17 @@ class Module{
       int moistureSetting;
 };
 
-Module::Module (int a, int b, char c, int) {
+Module::Module (int a, int b, char c, int d) {
   pin = a;
   value = b;
   id = c;
+  moistureSetting= d;
 }
 
-int moduleCount = 8;
+int moduleCount = 7;
 Module modules[8] = {
     
-        Module(A0,0,'1', 50),
+        Module(A0,0,'1', 100),
         Module(A1,0,'2', 50),
         Module(A2,0,'3', 50),
         Module(A3,0,'4', 50),
@@ -39,31 +41,51 @@ void setup() {
 
 void loop() {
 
-    for (int i = 0; i <= moduleCount; i++) {
+//    for (int i = 0; i <= moduleCount; i++) {
       
-        Module currentModule = modules[i];
-        Serial.print("\nCurrent plant ");
-        Serial.println(currentModule.id);
-        currentModule.value = analogRead(currentModule.pin);
-        printValueToSerial(currentModule.value);
+        Module currentModule = modules[0];
+        printId(currentModule.id);
+        Serial.println(analogRead(currentModule.pin));
+        currentModule.value = convertToPercent(analogRead(currentModule.pin));
 
-        delay(1000);
-    }
-    delay(1000);
+        if (currentModule.value < currentModule.moistureSetting){
+
+          Serial.print("Watering...\n");
+         }
+        
+        printValueToSerial(currentModule.value);
+        printSetting(currentModule.moistureSetting);
+//    }
+//    delay(1000);
 }
 
 int convertToPercent(int sensorValue){
     int percentValue = 0;
-    percentValue = map(sensorValue, 1023, 465, 0, 100);
+    percentValue = map(sensorValue, 623, 323, 0, 100);
     return percentValue;
 }
 
+void printSetting(int setting){
+        delay(1000);
+        Serial.print("Setting: ");
+        delay(1000);
+        Serial.print(setting);
+        Serial.println("%");
+ }
+
+ void printId(String id){
+        Serial.print("\nPlant ");
+        delay(1000);
+        Serial.println(id);
+        delay(1000);
+  } 
+
 void printValueToSerial(int value){
 
-    int percent = convertToPercent(value);
-    Serial.print("Analog Value: ");
+    Serial.print("Moisture Percent: ");
+    delay(1000);
     Serial.print(value);
-    Serial.print("\nPercent: ");
-    Serial.print(percent);
+    delay(100);
     Serial.println("%");
+    delay(1000);
 }
