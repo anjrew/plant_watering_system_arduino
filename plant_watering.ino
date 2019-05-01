@@ -25,10 +25,10 @@ Module::Module (int a, int b, char c, int d, int e) {
 }
 
 int moduleCount = 7;
-int pumpPin = 13;
+int pumpPin = 12;
 
 Module modules[8] = {
-        Module(A0,0,'1', 100, 2),
+        Module(A0,0,'1', 50, 2),
         Module(A1,0,'2', 50, 3),
         Module(A2,0,'3', 50, 4),
         Module(A3,0,'4', 50, 5),
@@ -42,35 +42,43 @@ Module modules[8] = {
 void setup() {
     Serial.begin(9600);
     // Initialise pins
-    for (int i = 2; i <= 10; i++) {
+    for (int i = 2; i < 10; i++) {
+        Serial.print("Pin ");
+        Serial.print(i);
         pinMode(i, OUTPUT);
+        Serial.print(" is set to OUTPUT\n" );
+        delay(500);
     }
     pinMode(pumpPin,OUTPUT);
 }
 
 void loop() {
 
-//    for (int i = 0; i <= moduleCount; i++) {
+    for (int i = 0; i <= moduleCount; i++) {
       
-        Module currentModule = modules[0];
+        Module currentModule = modules[i];
         printId(currentModule.id);
-        Serial.println(analogRead(currentModule.pin));
         currentModule.value = convertToPercent(analogRead(currentModule.pin));
 
         if (currentModule.value < currentModule.moistureSetting){
             digitalWrite(currentModule.servoPin, HIGH);
             digitalWrite(pumpPin, HIGH);
-            Serial.print("Watering...\n");
+            Serial.print(currentModule.servoPin);
+            Serial.print(" pin is Watering...\n");
         }
         else{
+            Serial.print(currentModule.servoPin);
+            Serial.print(" pin is Wet enough\n");
             digitalWrite(currentModule.servoPin, LOW);
             digitalWrite(pumpPin, LOW);
         }
         
         printValueToSerial(currentModule.value);
         printSetting(currentModule.moistureSetting);
-//    }
-//    delay(1000);
+        delay(500);
+
+    }
+    delay(1000);
 }
 
 int convertToPercent(int sensorValue){
@@ -80,26 +88,18 @@ int convertToPercent(int sensorValue){
 }
 
 void printSetting(int setting){
-        delay(1000);
-        Serial.print("Setting: ");
-        delay(1000);
+       Serial.print("Setting: ");
         Serial.print(setting);
         Serial.println("%");
  }
 
  void printId(String id){
         Serial.print("\nPlant ");
-        delay(1000);
-        Serial.println(id);
-        delay(1000);
-  } 
+        Serial.println(id);  } 
 
 void printValueToSerial(int value){
 
     Serial.print("Moisture Percent: ");
-    delay(1000);
     Serial.print(value);
-    delay(100);
     Serial.println("%");
-    delay(1000);
 }

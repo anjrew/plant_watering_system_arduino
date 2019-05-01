@@ -1,0 +1,17 @@
+[
+  {
+    "Sourcefile": "",
+    "Include": "",
+    "Includepath": "/Users/earyzhe/Library/Arduino15/packages/esp8266/hardware/esp8266/2.5.0/cores/esp8266"
+  },
+  {
+    "Sourcefile": "",
+    "Include": "",
+    "Includepath": "/Users/earyzhe/Library/Arduino15/packages/esp8266/hardware/esp8266/2.5.0/variants/arduino_uart"
+  },
+  {
+    "Sourcefile": "/Users/earyzhe/dev/Arduino/plant_watering/build/sketch/plant_watering.ino.cpp",
+    "Include": "",
+    "Includepath": ""
+  }
+]

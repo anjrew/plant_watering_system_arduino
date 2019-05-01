@@ -1,0 +1,11 @@
+{
+  "additionalFiles": "/build/preproc/ctags_target_for_gcc_minus_e.cpp,/build/sketch/plant_watering.ino.cpp",
+  "builtInLibrariesFolders": "/Applications/Arduino.app/Contents/Java/libraries",
+  "customBuildProperties": "build.path=/Users/earyzhe/dev/Arduino/plant_watering/build,build.warn_data_percentage=75,runtime.tools.esptool.path=/Users/earyzhe/Library/Arduino15/packages/esp8266/tools/esptool/2.5.0-3-20ed2b9,runtime.tools.esptool-2.5.0-3-20ed2b9.path=/Users/earyzhe/Library/Arduino15/packages/esp8266/tools/esptool/2.5.0-3-20ed2b9,runtime.tools.xtensa-lx106-elf-gcc.path=/Users/earyzhe/Library/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-3-20ed2b9,runtime.tools.xtensa-lx106-elf-gcc-2.5.0-3-20ed2b9.path=/Users/earyzhe/Library/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-3-20ed2b9,runtime.tools.mkspiffs.path=/Users/earyzhe/Library/Arduino15/packages/esp8266/tools/mkspiffs/2.5.0-3-20ed2b9,runtime.tools.mkspiffs-2.5.0-3-20ed2b9.path=/Users/earyzhe/Library/Arduino15/packages/esp8266/tools/mkspiffs/2.5.0-3-20ed2b9",
+  "fqbn": "esp8266:esp8266:arduino-esp8266:BoardModel=starottodeved,xtal=80,vt=flash,exception=disabled,eesz=4M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
+  "hardwareFolders": "/Applications/Arduino.app/Contents/Java/hardware,/Users/earyzhe/Library/Arduino15/packages",
+  "otherLibrariesFolders": "/Users/earyzhe/Documents/Arduino/libraries",
+  "runtime.ide.version": "10808",
+  "sketchLocation": "/Users/earyzhe/dev/Arduino/plant_watering/plant_watering.ino",
+  "toolsFolders": "/Applications/Arduino.app/Contents/Java/tools-builder,/Applications/Arduino.app/Contents/Java/hardware/tools/avr,/Users/earyzhe/Library/Arduino15/packages"
+}
