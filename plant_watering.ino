@@ -7,42 +7,49 @@
 
 class Module{
     public:
-      Module(int, int, char, int, int);
-      int pin;
-      int value;
+      Module(int, int, char, int, int, int, int);
+      int readPin;
+      int currentPercentage;
       String id;
       int moistureSetting;
       int servoPin;
+      int sensorLowerValue;
+      int sensorUpperValue;
 };
 
 /// Constructor for each module
-Module::Module (int a, int b, char c, int d, int e) {
-  pin = a;
-  value = b;
-  id = c;
-  moistureSetting = d;
-  servoPin = e;
+Module::Module (int a, int b, char c, int d, int e, int f, int g) {
+    readPin = a;
+    currentPercentage = b;
+    id = c;
+    moistureSetting = d;
+    servoPin = e;
+    sensorLowerValue = f;
+    sensorUpperValue = g;
+
 }
 
-int moduleCount = 7;
+#define MODULE_COUNT 5
+
 int pumpPin = 12;
 
-Module modules[8] = {
-        Module(A0,0,'1', 50, 2),
-        Module(A1,0,'2', 50, 3),
-        Module(A2,0,'3', 50, 4),
-        Module(A3,0,'4', 50, 5),
-        Module(A4,0,'5', 50, 6),
-        Module(A5,0,'6', 50, 7),
-        Module(A6,0,'7', 50, 8),
-        Module(A7,0,'8', 50, 9),    
+Module modules[MODULE_COUNT] = {
+        Module(A0,0,'1', 50, 2, 622, 323),
+        Module(A1,0,'2', 50, 3, 622, 323),
+        Module(A2,0,'3', 50, 4, 622, 323),
+        Module(A3,0,'4', 50, 5, 622, 323),
+        Module(A4,0,'5', 50, 6, 671, 362),
+//        Module(A5,0,'6', 50, 7, 612, 320),
+//        Module(A6,0,'7', 50, 8, 550, 274),
+//        Module(A7,0,'8', 50, 9, 604, 318), 
     } ;
+   
 
 
 void setup() {
     Serial.begin(9600);
     // Initialise pins
-    for (int i = 2; i < 10; i++) {
+    for (int i = 2; i <= MODULE_COUNT; i++) {
         Serial.print("Pin ");
         Serial.print(i);
         pinMode(i, OUTPUT);
@@ -54,34 +61,47 @@ void setup() {
 
 void loop() {
 
-    for (int i = 0; i <= moduleCount; i++) {
+    bool needsPump = false;
+
+    for (int i = 0; i < MODULE_COUNT; i++) {
+
+        Serial.print('\n');
       
         Module currentModule = modules[i];
         printId(currentModule.id);
-        currentModule.value = convertToPercent(analogRead(currentModule.pin));
+        currentModule.currentPercentage = convertToPercent(analogRead(currentModule.readPin));
 
-        if (currentModule.value < currentModule.moistureSetting){
+        Serial.print(" - ");
+
+
+        if (currentModule.currentPercentage < currentModule.moistureSetting){
             digitalWrite(currentModule.servoPin, HIGH);
-            digitalWrite(pumpPin, HIGH);
             Serial.print(currentModule.servoPin);
-            Serial.print(" pin is Watering...\n");
+            Serial.print(" pin is Watering... - ");
+            needsPump = true;
         }
         else{
             Serial.print(currentModule.servoPin);
-            Serial.print(" pin is Wet enough\n");
+            Serial.print(" pin is Wet enough - ");
             digitalWrite(currentModule.servoPin, LOW);
-            digitalWrite(pumpPin, LOW);
         }
         
-        printValueToSerial(currentModule.value);
+        printValueToSerial(currentModule.currentPercentage);
         printSetting(currentModule.moistureSetting);
-        delay(500);
+    }
 
+    if (needsPump){
+        digitalWrite(pumpPin, HIGH);
+    }
+    else{
+        digitalWrite(pumpPin, LOW);
     }
     delay(1000);
 }
 
 int convertToPercent(int sensorValue){
+    Serial.print("- Sensor value = ");
+    Serial.print(sensorValue);
     int percentValue = 0;
     percentValue = map(sensorValue, 622, 323, 0, 100);
     return percentValue;
@@ -94,12 +114,12 @@ void printSetting(int setting){
  }
 
  void printId(String id){
-        Serial.print("\nPlant ");
+        Serial.print(" - Plant ");
         Serial.println(id);  } 
 
-void printValueToSerial(int value){
+void printValueToSerial(int currentPercentage){
 
-    Serial.print("Moisture Percent: ");
-    Serial.print(value);
+    Serial.print(" - Moisture Percent: ");
+    Serial.print(currentPercentage);
     Serial.println("%");
 }
