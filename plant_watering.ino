@@ -37,19 +37,19 @@ Module modules[MODULE_COUNT] = {
         Module(A0,0,'1', 50, 2, 622, 323),
         Module(A1,0,'2', 50, 3, 622, 323),
         Module(A2,0,'3', 50, 4, 622, 323),
-        Module(A3,0,'4', 50, 5, 622, 323),
-        Module(A4,0,'5', 50, 6, 671, 362),
+        Module(A3,0,'4', 50, 5, 664, 339), // Checked sensor values 8/5/2019 Mint
+        Module(A4,0,'5', 50, 6, 672, 342), // Checked sensor values 8/5/2019 RoseMary
         Module(A5,0,'6', 50, 7, 612, 320),
-        Module(A6,0,'7', 50, 8, 550, 274),
-//        Module(A7,0,'8', 50, 9, 604, 318), 
+        Module(A7,0,'8', 50, 9, 663, 330), // Checked sensor values 8/5/2019 Peace Lily
     } ;
-   
+   //        Module(A6,0,'7', 50, 8, 550, 274),
+
 
 
 void setup() {
     Serial.begin(9600);
     // Initialise pins
-    for (int i = 2; i <= MODULE_COUNT; i++) {
+    for (int i = 2; i < (MODULE_COUNT + 3); i++) {
         Serial.print("Pin ");
         Serial.print(i);
         pinMode(i, OUTPUT);
@@ -109,8 +109,8 @@ int convertToPercent(int sensorValue){
 
 void printSetting(int setting){
        Serial.print("Setting: ");
-        Serial.print(setting);
-        Serial.println("%");
+       Serial.print(setting);
+       Serial.println("%");
  }
 
  void printId(String id){

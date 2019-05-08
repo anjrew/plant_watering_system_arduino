@@ -1,6 +1,13 @@
 {
-    "C_Cpp.errorSquiggles": "Disabled",
-    "files.associations": {
-        "__tuple": "cpp"
-    }
+    "arduino.path": "/Applications/Arduino.app",
+    "arduino.commandPath": "/Applications/Arduino.app/Contents/MacOS/Arduino",
+    "arduino.logLevel": "info",
+    "arduino.enableUSBDetection": true,
+    "arduino.disableTestingOpen": false,
+    "arduino.skipHeaderProvider": false,
+    "arduino.additionalUrls": [
+        "https://raw.githubusercontent.com/VSChina/azureiotdevkit_tools/master/package_azureboard_index.json",
+        "http://arduino.esp8266.com/stable/package_esp8266com_index.json"
+    ],
+    "arduino.defaultBaudRate": 115200
 }
