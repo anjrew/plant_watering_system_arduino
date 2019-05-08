@@ -29,7 +29,7 @@ Module::Module (int a, int b, char c, int d, int e, int f, int g) {
 
 }
 
-#define MODULE_COUNT 5
+#define MODULE_COUNT 7
 
 int pumpPin = 12;
 
@@ -39,8 +39,8 @@ Module modules[MODULE_COUNT] = {
         Module(A2,0,'3', 50, 4, 622, 323),
         Module(A3,0,'4', 50, 5, 622, 323),
         Module(A4,0,'5', 50, 6, 671, 362),
-//        Module(A5,0,'6', 50, 7, 612, 320),
-//        Module(A6,0,'7', 50, 8, 550, 274),
+        Module(A5,0,'6', 50, 7, 612, 320),
+        Module(A6,0,'7', 50, 8, 550, 274),
 //        Module(A7,0,'8', 50, 9, 604, 318), 
     } ;
    
@@ -75,7 +75,7 @@ void loop() {
 
 
         if (currentModule.currentPercentage < currentModule.moistureSetting){
-            digitalWrite(currentModule.servoPin, HIGH);
+            digitalWrite(currentModule.servoPin, LOW);
             Serial.print(currentModule.servoPin);
             Serial.print(" pin is Watering... - ");
             needsPump = true;
@@ -83,7 +83,7 @@ void loop() {
         else{
             Serial.print(currentModule.servoPin);
             Serial.print(" pin is Wet enough - ");
-            digitalWrite(currentModule.servoPin, LOW);
+            digitalWrite(currentModule.servoPin, HIGH);
         }
         
         printValueToSerial(currentModule.currentPercentage);
