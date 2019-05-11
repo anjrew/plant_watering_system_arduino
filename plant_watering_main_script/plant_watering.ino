@@ -29,7 +29,7 @@ Module::Module (int a, int b, char c, int d, int e, int f, int g) {
 
 }
 
-#define MODULE_COUNT 7
+#define MODULE_COUNT 6
 
 int pumpPin = 12;
 
@@ -40,7 +40,7 @@ Module modules[MODULE_COUNT] = {
         Module(A3,0,'4', 50, 5, 664, 339), // Checked sensor values 8/5/2019 Mint
         Module(A4,0,'5', 50, 6, 672, 342), // Checked sensor values 8/5/2019 RoseMary
         Module(A5,0,'6', 50, 7, 612, 320),
-        Module(A7,0,'8', 50, 9, 663, 330), // Checked sensor values 8/5/2019 Peace Lily
+//        Module(A7,0,'8', 50, 9, 882, 734), // Checked sensor values 8/5/2019 Peace Lily
     } ;
    //        Module(A6,0,'7', 50, 8, 550, 274),
 
@@ -69,7 +69,7 @@ void loop() {
       
         Module currentModule = modules[i];
         printId(currentModule.id);
-        currentModule.currentPercentage = convertToPercent(analogRead(currentModule.readPin));
+        currentModule.currentPercentage = convertToPercent(analogRead(currentModule.readPin), currentModule);
 
         Serial.print(" - ");
 
@@ -99,11 +99,11 @@ void loop() {
     delay(1000);
 }
 
-int convertToPercent(int sensorValue){
+int convertToPercent(int sensorValue, Module module){
     Serial.print("- Sensor value = ");
     Serial.print(sensorValue);
     int percentValue = 0;
-    percentValue = map(sensorValue, 622, 323, 0, 100);
+    percentValue = map(sensorValue, module.sensorLowerValue, module.sensorUpperValue , 0, 100);
     return percentValue;
 }
 
