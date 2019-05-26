@@ -7,26 +7,29 @@
 
 class Module{
     public:
-      Module(int, int, char, int, int, int, int);
+      Module(int, int, char, int, int, int, int, int, bool);
       int readPin;
       int currentPercentage;
       String id;
-      int moistureSetting;
+      int moistureSettingHigh;
       int servoPin;
       int sensorLowerValue;
       int sensorUpperValue;
+      int moistureSettingLow;
+      bool isPumping;
 };
 
 /// Constructor for each module
-Module::Module (int a, int b, char c, int d, int e, int f, int g) {
+Module::Module (int a, int b, char c, int d, int e, int f, int g, int h, bool i) {
     readPin = a;
     currentPercentage = b;
     id = c;
-    moistureSetting = d;
+    moistureSettingHigh = d;
     servoPin = e;
     sensorLowerValue = f;
     sensorUpperValue = g;
-
+    moistureSettingLow = h;
+    isPumping = i;
 }
 
 #define MODULE_COUNT 7
@@ -34,13 +37,13 @@ Module::Module (int a, int b, char c, int d, int e, int f, int g) {
 int pumpPin = 12;
 
 Module modules[MODULE_COUNT] = {
-        Module(A0,0,'1', 50, 2, 622, 323),
-        Module(A1,0,'2', 50, 3, 622, 323),
-        Module(A2,0,'3', 50, 4, 622, 323),
-        Module(A3,0,'4', 50, 5, 664, 339), // Checked sensor values 8/5/2019 Mint
-        Module(A4,0,'5', 50, 6, 672, 342), // Checked sensor values 8/5/2019 RoseMary
-        Module(A5,0,'6', 50, 7, 612, 320), 
-        Module(A6,0,'7', 50, 8, 597, 287), // Checked sensor values 8/5/2019 Peace Lily
+        Module(A0, 0, '1', 70, 2, 622, 323, 30, false),
+        Module(A1, 0, '2', 70, 3, 622, 323, 30, false),
+        Module(A2, 0, '3', 70, 4, 622, 323, 30, false),
+        Module(A3, 0, '4', 70, 5, 664, 339, 30, false), // Checked sensor values 8/5/2019 Mint
+        Module(A4, 0, '5', 70, 6, 672, 342, 30, false), // Checked sensor values 8/5/2019 RoseMary
+        Module(A5, 0, '6', 70, 7, 612, 320, 30, false), 
+        Module(A6, 0, '7', 70, 8, 597, 287, 30, false), // Checked sensor values 8/5/2019 Peace Lily
 
 //        Module(A7,0,'8', 50, 9, 882, 734), 
     } ;
@@ -76,20 +79,27 @@ void loop() {
         Serial.print(" - ");
 
 
-        if (currentModule.currentPercentage < currentModule.moistureSetting){
+        if (currentModule.currentPercentage < currentModule.moistureSettingLow && !currentModule.isPumping){
+            currentModule.isPumping = true;
             digitalWrite(currentModule.servoPin, LOW);
             Serial.print(currentModule.servoPin);
-            Serial.print(" pin is Watering... - ");
             needsPump = true;
         }
-        else{
+       if (currentModule.currentPercentage > currentModule.moistureSettingHigh && currentModule.isPumping){
             Serial.print(currentModule.servoPin);
-            Serial.print(" pin is Wet enough - ");
+            
             digitalWrite(currentModule.servoPin, HIGH);
         }
         
+        if (currentModule.isPumping){
+            Serial.print(" pin is Watering... - ");
+        }
+        else{
+            Serial.print(" pin is Wet enough - ");
+        }
+
         printValueToSerial(currentModule.currentPercentage);
-        printSetting(currentModule.moistureSetting);
+        printSetting(currentModule.moistureSettingHigh);
     }
 
     if (needsPump){
