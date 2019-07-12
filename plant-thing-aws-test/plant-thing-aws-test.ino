@@ -6,7 +6,7 @@ AWS_IOT hornbill;
 char WIFI_SSID[]="(Don't mention the war)";
 char WIFI_PASSWORD[]="56939862460419967485";
 char HOST_ADDRESS[]="a27jn895m2s73t-ats.iot.us-west-2.amazonaws.com";
-char CLIENT_ID[]=  "Andrew"//"client id";
+char CLIENT_ID[]=  "Andrew";//"client id";
 char TOPIC_NAME[]= "plant-monitor";
 
 
