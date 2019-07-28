@@ -3,8 +3,14 @@
 
 
 // Update these with values suitable for your network.
-const char* ssid = "MonkeyPark";
-const char* password = "MonkeyPark";
+// Monkey Park
+//const char* ssid = "MonkeyPark";
+//const char* password = "MonkeyPark";
+
+// Dads House
+const char* ssid = "BrightBox-9sbpsc";
+const char* password = "tag-dread-tame";
+
 const char* mqtt_server = "postman.cloudmqtt.com";
 #define mqtt_port 11968
 #define MQTT_USER "xxtdtmwf"
@@ -94,6 +100,10 @@ void loop() {
      memset(mun,0, 501);
      Serial.readBytesUntil( '\n',mun,500);
      publishSerialData(mun);
+   } else {
+
+     client.publish(MQTT_SERIAL_PUBLISH_TEST, "Loop is working");
+     delay(5000);
    }
  }
  
