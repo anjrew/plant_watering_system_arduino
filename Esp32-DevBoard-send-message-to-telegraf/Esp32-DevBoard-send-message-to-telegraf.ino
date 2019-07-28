@@ -7,20 +7,21 @@
 //const char* ssid = "MonkeyPark";
 //const char* password = "MonkeyPark";
 
+// Dads House
 //const char* ssid = "BrightBox-9sbpsc";
 //const char* password = "tag-dread-tame";
 
-// Dads House
-const char* ssid = "(Don't' mention the war)";
+// Oder 47
+const char* ssid     = "(Don't mention the war)";
 const char* password = "56939862460419967485";
-const char* mqtt_server = "ec2-34-217-213-209.us-west-2.compute.amazonaws.com";
-#define mqtt_port 1883
-#define MQTT_USER ""
-#define MQTT_PASSWORD ""
-#define MQTT_SERIAL_PUBLISH_TEST "/test"
-#define MQTT_SERIAL_RECEIVER_TEST "/test"
-#define MQTT_SERIAL_PUBLISH_CH "/icircuit/ESP32/serialdata/tx"
-#define MQTT_SERIAL_RECEIVER_CH "/icircuit/ESP32/serialdata/rx"
+
+const char* mqtt_server = "postman.cloudmqtt.com";
+#define mqtt_port 11968
+#define MQTT_USER "xxtdtmwf"
+#define MQTT_PASSWORD "c-0_VSx4qaOv"
+#define MQTT_SERIAL_PUBLISH "/test"
+#define MQTT_SERIAL_RECEIVER "/test"
+
 
 WiFiClient wifiClient;
 
@@ -57,9 +58,9 @@ void reconnect() {
     if (client.connect(clientId.c_str(),MQTT_USER,MQTT_PASSWORD)) {
       Serial.println("connected");
       //Once connected, publish an announcement...
-      client.publish(MQTT_SERIAL_PUBLISH_TEST, "weather,location=us-midwest temperature=82");
+      client.publish(MQTT_SERIAL_PUBLISH, "weather,location=us-midwest temperature=82");
       // ... and resubscribe
-      client.subscribe(MQTT_SERIAL_RECEIVER_TEST);
+      client.subscribe(MQTT_SERIAL_RECEIVER);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -92,7 +93,7 @@ void publishSerialData(char *serialData){
   if (!client.connected()) {
     reconnect();
   }
-  client.publish(MQTT_SERIAL_PUBLISH_CH, serialData);
+  client.publish(MQTT_SERIAL_PUBLISH, serialData);
 }
 
 void loop() {
@@ -104,7 +105,7 @@ void loop() {
      publishSerialData(mun);
    } else {
 
-     client.publish(MQTT_SERIAL_PUBLISH_TEST, "Loop is working");
+     client.publish(MQTT_SERIAL_PUBLISH, "weather,location=us-midwest temperature=82");
      delay(5000);
    }
  }
