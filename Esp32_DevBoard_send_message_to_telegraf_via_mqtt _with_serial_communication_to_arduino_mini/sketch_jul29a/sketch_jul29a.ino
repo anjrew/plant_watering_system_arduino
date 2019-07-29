@@ -134,13 +134,9 @@ void publishSerialData(char *serialData)
 void readSoftwareSerial2(){ // run over and over
 
   if (Serial2.available()) {
-//    Serial.write(Serial2.2read());
       String output = Serial2.readStringUntil('\n');
       Serial.println(output);
   }
-//  if (Serial.available()) {
-//    Serial2.write(Serial.read());
-//  }
 }
 
 void readCpuTemp() {
@@ -169,6 +165,5 @@ void loop()
         delay(5000);
     }
     readCpuTemp();
-//    readSoftwareSerial1();
     readSoftwareSerial2();
 }
