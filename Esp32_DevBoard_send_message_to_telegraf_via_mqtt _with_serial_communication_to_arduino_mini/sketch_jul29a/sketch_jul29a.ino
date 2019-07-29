@@ -16,6 +16,10 @@
   // Oder 47
   const char *ssid = "(Don't mention the war)";
   const char *password = "56939862460419967485";
+
+//  const int baudRate = 115200;
+  const int baudRate = 9600;
+
   
   #ifdef __cplusplus
   extern "C"
@@ -53,9 +57,7 @@
   
   void setup_wifi()
   {
-      delay(10);
       // We start by connecting to a WiFi network
-      Serial.println();
       Serial.print("Connecting to ");
       Serial.println(ssid);
       WiFi.begin(ssid, password);
@@ -87,8 +89,9 @@
           if (client.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD))
           {
               Serial.println("connected");
+              
               //Once connected, publish an announcement...
-              client.publish(MQTT_SERIAL_PUBLISH, "weather,location=new-entry temperature=82");
+
               // ... and resubscribe
               client.subscribe(MQTT_SERIAL_RECEIVER);
           }
@@ -113,25 +116,25 @@
   
   void setup()
   {
-      Serial.begin(9600);
+      Serial.begin(baudRate);
       Serial.setTimeout(500); // Set time out for
       setup_wifi();
       client.setServer(mqtt_server, mqtt_port);
   //    client.setCallback(callback);
       reconnect();
   
-      Serial2.begin(9600);
+      Serial2.begin(baudRate);
       Serial2.println("Hello, world?");
   }
   
-  void publishSerialData(char *serialData)
-  {
-      if (!client.connected())
-      {
-          reconnect();
-      }
-      client.publish(MQTT_SERIAL_PUBLISH, serialData);
-  }
+//  void publishSerialData(char *serialData)
+//  {
+//      if (!client.connected())
+//      {
+//          reconnect();
+//      }
+//      client.publish(MQTT_SERIAL_PUBLISH, serialData);
+//  }
   
   void readSoftwareSerial2(){ 
     if (Serial2.available()) {
@@ -141,7 +144,7 @@
         char char_array[str_len];
         output.toCharArray(char_array, str_len);
         client.publish(MQTT_SERIAL_PUBLISH, char_array);
-        delay(500);
+        delay(10);
     }
   }
   
@@ -158,7 +161,7 @@
     influxString.toCharArray(char_array, str_len);
     Serial.println(influxString);
     client.publish(MQTT_SERIAL_PUBLISH, char_array);
-    delay(500);
+    delay(10);
   }
   
   void loop()
@@ -166,9 +169,8 @@
       client.loop();
       if (loops > tempCheckLoops){
         loops = 0;
-//          readCpuTemp();
+          readCpuTemp();
         }
       loops++;
-   
       readSoftwareSerial2();
   }

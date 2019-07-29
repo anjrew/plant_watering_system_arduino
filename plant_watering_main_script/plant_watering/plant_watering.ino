@@ -41,6 +41,7 @@ Module::Module(int a, int b, char c, int d, int e, int f, int g, int h, bool i, 
 int pumpPin = 12;
 String systemId = "plntsys";
 int loopDelaymilli = 10000;
+int loopDelay = loopDelaymilli;
 
 Module modules[MODULE_COUNT] = {
     Module(A0, 0, '1', 70, 2, 622, 323, 40, false, "unknown"),
@@ -78,8 +79,6 @@ void loop()
 {
 
     bool needsPump = false;
-    String serialString;
-
     for (int i = 0; i < MODULE_COUNT; i++)
     {
 
@@ -112,7 +111,6 @@ void loop()
         {
             currentModule.isPumping = true;
             needsPump = true;
-            loopDelaymilli = 100;
             digitalWrite(currentModule.servoPin, LOW);
 
             //Opening servo
@@ -131,7 +129,6 @@ void loop()
         if (currentModule.currentPercentage > currentModule.moistureSettingHigh)
         {
             currentModule.isPumping = false;
-            loopDelaymilli = 10000;
             digitalWrite(currentModule.servoPin, HIGH);
 
             //Opening servo
@@ -159,26 +156,23 @@ void loop()
         }
 
         Serial.println(plantDataString);
-
-        plantDataString += String("&&");
-        serialString += String(plantDataString);
     }
 
     if (needsPump)
     {
         digitalWrite(pumpPin, HIGH);
+        loopDelay = 0;
     }
     else
     {
         digitalWrite(pumpPin, LOW);
+        loopDelay = loopDelaymilli;
     }
-    delay(loopDelaymilli);
+    delay(loopDelay);
 }
 
 int convertToPercent(int sensorValue, Module module)
 {
-    //    Serial.print("- Sensor value = ");
-    //    Serial.print(sensorValue);
     int percentValue = 0;
     percentValue = map(sensorValue, module.sensorLowerValue, module.sensorUpperValue, 0, 100);
     return percentValue;
