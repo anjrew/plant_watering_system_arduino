@@ -35,6 +35,8 @@ Module::Module (int a, int b, char c, int d, int e, int f, int g, int h, bool i)
 #define MODULE_COUNT 7
 
 int pumpPin = 12;
+String systemId = "plntsys47odstrbed"
+int loopDelaymilli = 10000;
 
 Module modules[MODULE_COUNT] = {
         Module(A0, 0, '1', 70, 2, 622, 323, 40, false),
@@ -70,69 +72,66 @@ void setup() {
 void loop() {
 
     bool needsPump = false;
+    String serialString = ''
 
     for (int i = 0; i < MODULE_COUNT; i++) {
-
-        Serial.print('\n');
       
         Module currentModule = modules[i];
-        printId(currentModule.id);
+        String plantDataString = ""
+
+        plantDataString += currentModule.id + ",";
+
         currentModule.currentPercentage = convertToPercent(analogRead(currentModule.readPin), currentModule);
-
-        Serial.print(" - ");
-
 
         if (currentModule.currentPercentage < currentModule.moistureSettingLow){
             currentModule.isPumping = true;
+            loopDelaymilli = 100;
             digitalWrite(currentModule.servoPin, LOW);
-            Serial.print("Opening Servo : ");
+
             Serial.print(currentModule.servoPin);
-            needsPump = true;
-            Serial.print(" pin is Watering... and pumping- ");
+            //Opening servo
+            plantDataString += "in_dead_zone=false"
         }
         if (currentModule.currentPercentage >= currentModule.moistureSettingLow && currentModule.currentPercentage <= currentModule.moistureSettingHigh){
-            Serial.print("Holding as is in the dead zone: ");
             if (!currentModule.isPumping){
-                 digitalWrite(currentModule.servoPin, HIGH);
+                digitalWrite(currentModule.servoPin, HIGH);
              }
-        }
-          
+
+            //the deadzone
+            plantDataString += "in_dead_zone=true"
+        }  
        if (currentModule.currentPercentage > currentModule.moistureSettingHigh){
             currentModule.isPumping = false;
-            Serial.print("Closing  Servo : ");
-            Serial.print(currentModule.servoPin);
+            loopDelaymilli = 10000;
             digitalWrite(currentModule.servoPin, HIGH);
-            Serial.print(" pin is Wet enough - and Stoping pumping ");
+
+            //Opening servo
+            plantDataString += "in_dead_zone=false"
         }
         
-        printValueToSerial(currentModule.currentPercentage);
-        Serial.print("High  Setting : ");
-        printSetting(currentModule.moistureSettingHigh);
-        Serial.print(" Low  Setting : ");
-        printSetting(currentModule.moistureSettingLow );
-
-        if (currentModule.isPumping){
-          Serial.println("Current module is pumping");
-        }
+        plantDataString += "," + "moisture_level=" + currentModule.currentPercentage;
 
         byte pinState = digitalRead(currentModule.servoPin);
         if (pinState == LOW) {
-           Serial.println("The current servo pin is open");
+            plantDataString += ",servo_open=true",
         } else {
-           Serial.println("The servo pin is closed");
-         }
+            plantDataString += ",servo_open=false",
+        }
+        plantDataString += "\x"
+        serialString += plantDataString
     }
 
     if (needsPump){
-        Serial.print(" Turning Pump on : ");
+        serialString += "," + "pump_status=true";
         digitalWrite(pumpPin, HIGH);
     }
     else{
-        Serial.print(" Turning Pump off : ");
+        serialString + "," + "pump_status=false";
         digitalWrite(pumpPin, LOW);
     }
 
-    delay(1000);
+    Serial.println(serialString)
+    delay(loopDelaymilli);
 }
 
 int convertToPercent(int sensorValue, Module module){
@@ -149,12 +148,11 @@ void printSetting(int setting){
        Serial.println("%");
  }
 
- void printId(String id){
-        Serial.print(" - Plant ");
-        Serial.println(id);  } 
+void printId(String id){
+    Serial.print(" - Plant ");
+    Serial.println(id);  } 
 
 void printValueToSerial(int currentPercentage){
-
     Serial.print(" - Moisture Percent: ");
     Serial.print(currentPercentage);
     Serial.println("%");
