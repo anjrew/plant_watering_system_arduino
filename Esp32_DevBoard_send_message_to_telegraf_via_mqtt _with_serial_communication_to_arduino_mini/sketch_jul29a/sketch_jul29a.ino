@@ -134,11 +134,13 @@ void publishSerialData(char *serialData)
 void readSoftwareSerial2(){ // run over and over
 
   if (Serial2.available()) {
-    Serial.write(Serial2.read());
+//    Serial.write(Serial2.2read());
+      String output = Serial2.readStringUntil('\n');
+      Serial.println(output);
   }
-  if (Serial.available()) {
-    Serial2.write(Serial.read());
-  }
+//  if (Serial.available()) {
+//    Serial2.write(Serial.read());
+//  }
 }
 
 void readCpuTemp() {
@@ -158,15 +160,15 @@ void loop()
         char mun[501];
         memset(mun, 0, 501);
         Serial.readBytesUntil('\n', mun, 500);
-        publishSerialData(mun);
+//        publishSerialData(mun);
     }
     else
     {
 
-        client.publish(MQTT_SERIAL_PUBLISH, "weather,location=us-eastside temperature=124");
+//        client.publish(MQTT_SERIAL_PUBLISH, "weather,location=us-eastside temperature=124");
         delay(5000);
     }
-
+    readCpuTemp();
 //    readSoftwareSerial1();
     readSoftwareSerial2();
 }
