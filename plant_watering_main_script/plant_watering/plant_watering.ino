@@ -35,7 +35,7 @@ Module::Module (int a, int b, char c, int d, int e, int f, int g, int h, bool i)
 #define MODULE_COUNT 7
 
 int pumpPin = 12;
-String systemId = "plntsys47odstrbed"
+String systemId = "plntsys47odstrbed";
 int loopDelaymilli = 10000;
 
 Module modules[MODULE_COUNT] = {
@@ -72,12 +72,12 @@ void setup() {
 void loop() {
 
     bool needsPump = false;
-    String serialString = ''
+    String serialString;
 
     for (int i = 0; i < MODULE_COUNT; i++) {
       
         Module currentModule = modules[i];
-        String plantDataString = ""
+        String plantDataString;
 
         plantDataString += currentModule.id + ",";
 
@@ -85,12 +85,13 @@ void loop() {
 
         if (currentModule.currentPercentage < currentModule.moistureSettingLow){
             currentModule.isPumping = true;
+            needsPump = true;
             loopDelaymilli = 100;
             digitalWrite(currentModule.servoPin, LOW);
 
             Serial.print(currentModule.servoPin);
             //Opening servo
-            plantDataString += "in_dead_zone=false"
+            plantDataString += "in_dead_zone=false";
         }
         if (currentModule.currentPercentage >= currentModule.moistureSettingLow && currentModule.currentPercentage <= currentModule.moistureSettingHigh){
             if (!currentModule.isPumping){
@@ -98,7 +99,7 @@ void loop() {
              }
 
             //the deadzone
-            plantDataString += "in_dead_zone=true"
+            plantDataString += String("in_dead_zone=true");
         }  
        if (currentModule.currentPercentage > currentModule.moistureSettingHigh){
             currentModule.isPumping = false;
@@ -106,37 +107,37 @@ void loop() {
             digitalWrite(currentModule.servoPin, HIGH);
 
             //Opening servo
-            plantDataString += "in_dead_zone=false"
+            plantDataString += String("in_dead_zone=false");
         }
         
-        plantDataString += "," + "moisture_level=" + currentModule.currentPercentage;
+        plantDataString = String(",") +  String("moisture_level=") + String(currentModule.currentPercentage);
 
         byte pinState = digitalRead(currentModule.servoPin);
         if (pinState == LOW) {
-            plantDataString += ",servo_open=true",
+            plantDataString += String(",servo_open=true");
         } else {
-            plantDataString += ",servo_open=false",
+            plantDataString += String(",servo_open=false");
         }
-        plantDataString += "\x"
-        serialString += plantDataString
+        plantDataString += String("\z");
+        serialString += String(plantDataString);
     }
 
     if (needsPump){
-        serialString += "," + "pump_status=true";
+        serialString += String(",") + String("pump_status=true");
         digitalWrite(pumpPin, HIGH);
     }
     else{
-        serialString + "," + "pump_status=false";
+        serialString += String(",") + String("pump_status=false");
         digitalWrite(pumpPin, LOW);
     }
 
-    Serial.println(serialString)
+    Serial.println(serialString);
     delay(loopDelaymilli);
 }
 
 int convertToPercent(int sensorValue, Module module){
-    Serial.print("- Sensor value = ");
-    Serial.print(sensorValue);
+//    Serial.print("- Sensor value = ");
+//    Serial.print(sensorValue);
     int percentValue = 0;
     percentValue = map(sensorValue, module.sensorLowerValue, module.sensorUpperValue , 0, 100);
     return percentValue;
@@ -157,4 +158,3 @@ void printValueToSerial(int currentPercentage){
     Serial.print(currentPercentage);
     Serial.println("%");
 }
-
