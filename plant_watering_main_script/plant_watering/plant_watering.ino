@@ -37,13 +37,13 @@ Module::Module (int a, int b, char c, int d, int e, int f, int g, int h, bool i)
 int pumpPin = 12;
 
 Module modules[MODULE_COUNT] = {
-        Module(A0, 0, '1', 70, 2, 622, 323, 30, false),
-        Module(A1, 0, '2', 70, 3, 622, 323, 30, false),
-        Module(A2, 0, '3', 70, 4, 622, 323, 30, false),
-        Module(A3, 0, '4', 70, 5, 664, 339, 30, false), // Checked sensor values 8/5/2019 Mint
-        Module(A4, 0, '5', 70, 6, 672, 342, 30, false), // Checked sensor values 8/5/2019 RoseMary
-        Module(A5, 0, '6', 70, 7, 612, 320, 30, false), 
-        Module(A6, 0, '7', 70, 8, 597, 287, 30, false), // Checked sensor values 8/5/2019 Peace Lily
+        Module(A0, 0, '1', 70, 2, 622, 323, 40, false),
+        Module(A1, 0, '2', 70, 3, 640, 323, 40, false), // Checked sensor values 2/6/2019 Plant two - Hanging plant 
+        Module(A2, 0, '3', 70, 4, 622, 323, 40, false),
+        Module(A3, 0, '4', 90, 5, 664, 339, 60, false), // Checked sensor values 8/5/2019 Mint - The low threshold ishigher as the mint was looking bad at 30%
+        Module(A4, 0, '5', 70, 6, 672, 342, 40, false), // Checked sensor values 8/5/2019 RoseMary
+        Module(A5, 0, '6', 70, 7, 700, 372, 40, false), // Checked sensor values 2/6/2019 Cactus
+        Module(A6, 0, '7', 70, 8, 597, 287, 40, false), // Checked sensor values 8/5/2019 Peace Lily
 
 //        Module(A7,0,'8', 50, 9, 882, 734), 
     } ;
@@ -62,6 +62,9 @@ void setup() {
         delay(500);
     }
     pinMode(pumpPin,OUTPUT);
+    for (int i = 2; i < (MODULE_COUNT + 3); i++) {
+        modules[i].isPumping = false;
+    }
 }
 
 void loop() {
@@ -79,35 +82,56 @@ void loop() {
         Serial.print(" - ");
 
 
-        if (currentModule.currentPercentage < currentModule.moistureSettingLow && !currentModule.isPumping){
+        if (currentModule.currentPercentage < currentModule.moistureSettingLow){
             currentModule.isPumping = true;
             digitalWrite(currentModule.servoPin, LOW);
+            Serial.print("Opening Servo : ");
             Serial.print(currentModule.servoPin);
             needsPump = true;
+            Serial.print(" pin is Watering... and pumping- ");
         }
-       if (currentModule.currentPercentage > currentModule.moistureSettingHigh && currentModule.isPumping){
+        if (currentModule.currentPercentage >= currentModule.moistureSettingLow && currentModule.currentPercentage <= currentModule.moistureSettingHigh){
+            Serial.print("Holding as is in the dead zone: ");
+            if (!currentModule.isPumping){
+                 digitalWrite(currentModule.servoPin, HIGH);
+             }
+        }
+          
+       if (currentModule.currentPercentage > currentModule.moistureSettingHigh){
+            currentModule.isPumping = false;
+            Serial.print("Closing  Servo : ");
             Serial.print(currentModule.servoPin);
-            
             digitalWrite(currentModule.servoPin, HIGH);
+            Serial.print(" pin is Wet enough - and Stoping pumping ");
         }
         
+        printValueToSerial(currentModule.currentPercentage);
+        Serial.print("High  Setting : ");
+        printSetting(currentModule.moistureSettingHigh);
+        Serial.print(" Low  Setting : ");
+        printSetting(currentModule.moistureSettingLow );
+
         if (currentModule.isPumping){
-            Serial.print(" pin is Watering... - ");
-        }
-        else{
-            Serial.print(" pin is Wet enough - ");
+          Serial.println("Current module is pumping");
         }
 
-        printValueToSerial(currentModule.currentPercentage);
-        printSetting(currentModule.moistureSettingHigh);
+        byte pinState = digitalRead(currentModule.servoPin);
+        if (pinState == LOW) {
+           Serial.println("The current servo pin is open");
+        } else {
+           Serial.println("The servo pin is closed");
+         }
     }
 
     if (needsPump){
+        Serial.print(" Turning Pump on : ");
         digitalWrite(pumpPin, HIGH);
     }
     else{
+        Serial.print(" Turning Pump off : ");
         digitalWrite(pumpPin, LOW);
     }
+
     delay(1000);
 }
 
@@ -135,3 +159,4 @@ void printValueToSerial(int currentPercentage){
     Serial.print(currentPercentage);
     Serial.println("%");
 }
+
