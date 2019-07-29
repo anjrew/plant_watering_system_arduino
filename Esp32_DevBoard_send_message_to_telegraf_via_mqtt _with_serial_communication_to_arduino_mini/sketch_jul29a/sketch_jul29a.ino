@@ -48,7 +48,7 @@
   char b;
   String str;
   int loops = 0;
-  int tempCheckLoops = 6000;
+  int tempCheckLoops = 60000;
   
   
   void setup_wifi()
@@ -88,7 +88,7 @@
           {
               Serial.println("connected");
               //Once connected, publish an announcement...
-              client.publish(MQTT_SERIAL_PUBLISH, "weather,location=us-midwest temperature=82");
+              client.publish(MQTT_SERIAL_PUBLISH, "weather,location=new-entry temperature=82");
               // ... and resubscribe
               client.subscribe(MQTT_SERIAL_RECEIVER);
           }
@@ -141,6 +141,7 @@
         char char_array[str_len];
         output.toCharArray(char_array, str_len);
         client.publish(MQTT_SERIAL_PUBLISH, char_array);
+        delay(500);
     }
   }
   
@@ -149,14 +150,15 @@
      double tempInC = (temprature_sens_read() - 32) / 1.8;
      String tempString = String(tempInC);
     // Convert raw temperature in F to Celsius degrees
-    String influxString = "things,id=andrews_esp32_nodemcu,city=berlin,location=oderstrasse,room=andrews, cpu_temp_c=";
+    String influxString = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews cpu_temp_c=";
+    
     influxString += tempString;
     int str_len = influxString.length() + 1; 
     char char_array[str_len];
     influxString.toCharArray(char_array, str_len);
-    Serial.print(influxString);
+    Serial.println(influxString);
     client.publish(MQTT_SERIAL_PUBLISH, char_array);
-    delay(1000);
+    delay(500);
   }
   
   void loop()
@@ -164,9 +166,9 @@
       client.loop();
       if (loops > tempCheckLoops){
         loops = 0;
-          readCpuTemp();
+//          readCpuTemp();
         }
       loops++;
-      Serial.println(loops);
+   
       readSoftwareSerial2();
   }
