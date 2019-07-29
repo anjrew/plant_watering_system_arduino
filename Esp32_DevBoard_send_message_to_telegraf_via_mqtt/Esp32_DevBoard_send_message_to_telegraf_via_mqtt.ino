@@ -46,6 +46,7 @@ void setup_wifi() {
 }
 
 void reconnect() {
+  
   // Loop until we're reconnected
   while (!client.connected()) {
     
@@ -54,6 +55,7 @@ void reconnect() {
     // Create a random client ID
     String clientId = "ESP32Client-";
     clientId += String(random(0xffff), HEX);
+    
     // Attempt to connect
     if (client.connect(clientId.c_str(),MQTT_USER,MQTT_PASSWORD)) {
       Serial.println("connected");
@@ -105,7 +107,7 @@ void loop() {
      publishSerialData(mun);
    } else {
 
-     client.publish(MQTT_SERIAL_PUBLISH, "weather,location=us-midwest temperature=82");
+     client.publish(MQTT_SERIAL_PUBLISH, "weather,location=us-eastside temperature=124");
      delay(5000);
    }
  }

@@ -34,8 +34,6 @@ char b;
 String str;
 
 
-
-
 void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
@@ -52,40 +50,7 @@ void setup() {
 }
 
 void loop() { // run over and over
-  //Read
-//  mySerial.readBytes(mystr,5); //Read the serial data and store in var
-//  mySerial.println(mystr); //Print data on Serial Monitor
 
-  while(mySerial.available()) {
-            char b = mySerial.read();
-            Serial.print(b);
-            delay(1);
-     }
-
-  incomingByte = mySerial.read();
-  
-  // say what you got:
-  Serial.print("I received in raw: ");
-  Serial.println(incomingByte);
-  
-  Serial.print("I received as DEC: ");
-  Serial.println(incomingByte, DEC);
-  
-  Serial.print("I received as HEX: ");
-  Serial.println(incomingByte, HEX);
-
-  Serial.print("I received as OCT: ");
-  Serial.println(incomingByte, OCT);
-
-  Serial.print("I received as BIN: ");
-  Serial.println(incomingByte, BIN);
-
-  
-  str=String(incomingByte);
-  Serial.println(str);
-//  str.toCharArray(b,2);   
-  
-  
   if (mySerial.available()) {
     Serial.write(mySerial.read());
   }
