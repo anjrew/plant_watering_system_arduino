@@ -11,7 +11,7 @@ public:
     Module(int, int, char, int, int, int, int, int, bool, String);
     int readPin;
     int currentPercentage;
-    char id;
+    String id;
     int moistureSettingHigh;
     int servoPin;
     int sensorLowerValue;
@@ -52,6 +52,7 @@ Module modules[MODULE_COUNT] = {
     Module(A4, 0, '5', 70, 6, 672, 342, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 RoseMary
     Module(A5, 0, '6', 60, 7, 700, 372, 30, false, "cactus"),     // Checked sensor values 2/6/2019 Cactus
     Module(A6, 0, '7', 70, 8, 597, 287, 40, false, "peace_lily"), // Checked sensor values 8/5/2019 Peace Lily
+
     //        Module(A7,0,'8', 50, 9, 882, 734),
 };
 
@@ -65,13 +66,14 @@ void setup()
         Serial.print(i);
         pinMode(i, OUTPUT);
         Serial.print(" is set to OUTPUT\n");
-        delay(100);
+        delay(500);
     }
     pinMode(pumpPin, OUTPUT);
     for (int i = 2; i < (MODULE_COUNT + 3); i++)
     {
         modules[i].isPumping = false;
     }
+    delay(1000);
     Serial.println("Finished setup");
 }
 
@@ -85,38 +87,56 @@ void loop()
         Module currentModule = modules[i];
         int totalChar = strlen(systemId);
         // Project /
-        Serial.print("plant_system");
+
         //Tags /
-        Serial.print(",city=Berlin");
-        Serial.print(",location=oderstrasse");
-        Serial.print(",room=andrews");
-        Serial.print(",plant_type=");
-        Serial.print(currentModule.plantType);
-        Serial.print(",plant_id=");
-        Serial.print(currentModule.id);
-        
-        Serial.print(" ");
+        char city = ",city=Berlin";
+        char location = ",location=oderstrasse";
+        char room = ",room=andrews";
+        totalChar += strlen(city) + strlen(location) + strlen(room);
+
+        char typeKey = ",plant_type=";
+        String typeValue = currentModule.plantType;
+        char typeBuf[typeValue.length() + 1];
+        typeValue.toCharArray(typeBuf, typeValue.length() + 1);
+        totalChar += typeValue.length() + strlen(typeKey);
+
+        char seporatorSpace = " ";
+        totalChar += strlen(seporatorSpace);
 
         //Fields
-        Serial.print("servo_pin=");
-        Serial.print(currentModule.servoPin);
+        char plantIdKey = ",plant_id=";
+        String plantIdValue = currentModule.id;
+        char idBuf[plantIdValue.length() + 1];
+        plantIdValue.toCharArray(idBuf, plantIdValue.length() + 1);
+        totalChar += strlen(plantIdKey) + plantIdValue.length();
 
-        Serial.print(",read_pin=");
-        Serial.print(currentModule.readPin);
+        char servoPinKey = ",servo_pin=";
+        char servoPinValue = currentModule.servoPin;
+        totalChar += strlen(servoPinKey) + strlen(servoPinValue);
 
-        Serial.print(",moi_setting_high=");
-        Serial.print(currentModule.moistureSettingHigh);
+        char readPinKey = ",read_pin=";
+        char readPinValue = currentModule.readPin;
+        totalChar += strlen(readPinKey) + strlen(readPinValue);
 
-        Serial.print(",moi_setting_low=");
-        Serial.print(currentModule.moistureSettingLow);
+        char settingHighKey = ",moi_setting_high=";
+        char settingHighValue = currentModule.moistureSettingHigh;
+        totalChar += strlen(settingHighKey) + strlen(settingHighValue);
 
-        Serial.print(",sensor_low_value=");
-        Serial.print(currentModule.sensorUpperValue);
+        char settingLowKey = ",moi_setting_low=";
+        char settingLowValue = currentModule.moistureSettingLow;
+        totalChar += strlen(settingLowKey) + strlen(settingLowValue);
+
+        char plantDataStringKey = ",sensor_low_value=";
+        char plantDataStringValue = currentModule.sensorUpperValue;
+        totalChar += strlen(plantDataStringKey) + strlen(plantDataStringValue);
 
         currentModule.currentPercentage = convertToPercent(analogRead(currentModule.readPin), currentModule);
 
-        Serial.print(",moisture_level=");
-        Serial.print(currentModule.currentPercentage);
+        char levelKey = ",moisture_level=";
+        char levelValue = currentModule.currentPercentage;
+        totalChar += strlen(levelKey) + strlen(levelValue);
+
+        char deadzone = '\0';
 
         if (currentModule.currentPercentage < currentModule.moistureSettingLow)
         {
@@ -125,7 +145,7 @@ void loop()
             digitalWrite(currentModule.servoPin, LOW);
 
             //Opening servo
-            Serial.print(",in_dead_zone=f");
+            deadzone = ",in_dead_zone=f";
         }
         if (currentModule.currentPercentage >= currentModule.moistureSettingLow && currentModule.currentPercentage <= currentModule.moistureSettingHigh)
         {
@@ -135,7 +155,7 @@ void loop()
             }
 
             //the deadzone
-            Serial.print(",in_dead_zone=t");
+            deadzone = ",in_dead_zone=t";
         }
         if (currentModule.currentPercentage > currentModule.moistureSettingHigh)
         {
@@ -143,30 +163,71 @@ void loop()
             digitalWrite(currentModule.servoPin, HIGH);
 
             //Opening servo
-            Serial.print(",in_dead_zone=f");
+            deadzone = ",in_dead_zone=f";
         }
+        totalChar += strlen(deadzone);
 
+        char servoOpen = '\0';
 
         byte servoPinState = digitalRead(currentModule.servoPin);
         if (servoPinState == LOW)
         {
-            Serial.print(",servo_open=t");
+            servoOpen = ",servo_open=t";
         }
         else
         {
-            Serial.print(",servo_open=f");
+            servoOpen = ",servo_open=f";
         }
+        totalChar += strlen(servoOpen);
 
+        char pumpOpen = '\0';
 
         byte pumpPinState = digitalRead(pumpPin);
         if (pumpPinState == LOW)
         {
-            Serial.println(",pump_open=f");
+            pumpOpen = ",pump_open=f";
         }
         else
         {
-            Serial.println(",pump_open=t");
+            pumpOpen = ",pump_open=t";
         }
+
+        totalChar += strlen(pumpOpen);
+        Serial.println("Buffer length in");
+        Serial.println(city);
+        Serial.println(totalChar);
+
+        char buf[totalChar + 20];
+        strcpy(buf,systemId);
+
+        // Tags
+        strcat(buf,city);
+        strcat(buf,location);
+        strcat(buf,room);
+        strcat(buf,typeKey);
+        strcat(buf,typeBuf);
+        strcat(buf,seporatorSpace);
+        //Fields
+        strcat(buf,plantIdKey);
+        strcat(buf,idBuf);
+        strcat(buf,servoPinKey);
+        strcat(buf,servoPinValue);
+        strcat(buf,readPinKey);
+        strcat(buf,readPinValue);
+        strcat(buf,settingHighKey);
+        strcat(buf,settingHighValue);
+        strcat(buf,settingLowKey);
+        strcat(buf,settingLowValue);
+        strcat(buf,plantDataStringKey);
+        strcat(buf,plantDataStringValue);
+        strcat(buf,levelKey);
+        strcat(buf,levelValue);
+        strcat(buf,deadzone);
+        strcat(buf,servoOpen);
+        strcat(buf,pumpOpen);
+        Serial.println("Buffer length out");
+        Serial.println(strlen(buf));
+        Serial.println(buf);
         delay(100);
     }
 
@@ -181,6 +242,16 @@ void loop()
         loopDelay = loopDelaymilli;
     }
     delay(loopDelay);
+}
+
+char *stringToChar(String toChange)
+{
+    //        strcpy (buf, "But does it get goat's blood out?");
+    //        return buf;
+    //        int str_len = strlen(toChange)() + 1;
+    //        char * buf = (char *) malloc (str_len);
+    //        toChange.toCharArray(char_array, str_len);
+    //        return char_array1;
 }
 
 int convertToPercent(int sensorValue, Module module)
