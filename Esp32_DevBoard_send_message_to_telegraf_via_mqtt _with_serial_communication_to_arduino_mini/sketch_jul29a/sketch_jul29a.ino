@@ -34,8 +34,8 @@
   #define mqtt_port 11968
   #define MQTT_USER "xxtdtmwf"
   #define MQTT_PASSWORD "c-0_VSx4qaOv"
-  #define MQTT_SERIAL_PUBLISH "/test"
-  #define MQTT_SERIAL_RECEIVER "/test"
+  #define MQTT_SERIAL_PUBLISH "plants/berlin/oderstrasse/andrew"
+  #define MQTT_SERIAL_RECEIVER "plants/berlin/oderstrasse/andrew"
   
   WiFiClient wifiClient;
   

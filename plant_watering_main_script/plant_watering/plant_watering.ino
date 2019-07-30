@@ -50,7 +50,7 @@ Module modules[MODULE_COUNT] = {
     Module(A0, 0, '1', 70, 2, 622, 323, 40, false, "unknown"),
     Module(A1, 0, '2', 70, 3, 640, 323, 40, false, "unknown"), // Checked sensor values 2/6/2019 Plant two - Hanging plant
     Module(A2, 0, '3', 70, 4, 622, 323, 40, false, "unknown"),
-    Module(A3, 0, '4', 90, 5, 664, 339, 60, false, "various"),    // Checked sensor values 8/5/2019 Mint - The low threshold ishigher as the mint was looking bad at 30%
+    Module(A3, 0, '4', 90, 5, 664, 339, 60, false, "various"),    // Big plant bed
     Module(A4, 0, '5', 70, 6, 672, 342, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 RoseMary
     Module(A5, 0, '6', 60, 7, 700, 372, 30, false, "cactus"),     // Checked sensor values 2/6/2019 Cactus
     Module(A6, 0, '7', 70, 8, 597, 287, 40, false, "peace_lily"), // Checked sensor values 8/5/2019 Peace Lily
