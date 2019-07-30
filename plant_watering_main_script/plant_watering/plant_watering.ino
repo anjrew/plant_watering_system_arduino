@@ -8,7 +8,7 @@
 class Module
 {
 public:
-    Module(int, int, char, int, int, int, int, int, bool, String);
+    Module(int, int, char, int, int, int, int, int, bool, char*);
     int readPin;
     int currentPercentage;
     char id;
@@ -18,11 +18,11 @@ public:
     int sensorUpperValue;
     int moistureSettingLow;
     bool isPumping;
-    const String plantType;
+    char* plantType;
 };
 
 /// Constructor for each module
-Module::Module(int a, int b, char c, int d, int e, int f, int g, int h, bool i, String j)
+Module::Module(int a, int b, char c, int d, int e, int f, int g, int h, bool i, char* j )
 {
     readPin = a;
     currentPercentage = b;
@@ -41,8 +41,10 @@ Module::Module(int a, int b, char c, int d, int e, int f, int g, int h, bool i, 
 const int pumpPin = 12;
 const char systemId = "plant_system";
 const float baudRate = 115200;
-const int loopDelaymilli = 10000;
-int loopDelay = loopDelaymilli;
+
+// Time in milliseconds
+const unsigned long  loopDelayNormalSecs = 60;
+const int loopDelayPumpmilli = 100;
 
 Module modules[MODULE_COUNT] = {
     Module(A0, 0, '1', 70, 2, 622, 323, 40, false, "unknown"),
@@ -96,6 +98,7 @@ void loop()
         Serial.print(currentModule.id);
         
         Serial.print(" ");
+        delay(10);
 
         //Fields
         Serial.print("servo_pin=");
@@ -117,6 +120,8 @@ void loop()
 
         Serial.print(",moisture_level=");
         Serial.print(currentModule.currentPercentage);
+        
+        delay(10);
 
         if (currentModule.currentPercentage < currentModule.moistureSettingLow)
         {
@@ -145,7 +150,7 @@ void loop()
             //Opening servo
             Serial.print(",in_dead_zone=f");
         }
-
+        delay(10);
 
         byte servoPinState = digitalRead(currentModule.servoPin);
         if (servoPinState == LOW)
@@ -155,8 +160,8 @@ void loop()
         else
         {
             Serial.print(",servo_open=f");
-        }
-
+        } 
+        delay(10);
 
         byte pumpPinState = digitalRead(pumpPin);
         if (pumpPinState == LOW)
@@ -173,14 +178,18 @@ void loop()
     if (needsPump)
     {
         digitalWrite(pumpPin, HIGH);
-        loopDelay = 0;
+        delay(loopDelayPumpmilli);
     }
     else
     {
         digitalWrite(pumpPin, LOW);
-        loopDelay = loopDelaymilli;
+        int p = 0;
+        while (p < loopDelayNormalSecs) {
+        delay(1000);
+        p++;
+      }
+
     }
-    delay(loopDelay);
 }
 
 int convertToPercent(int sensorValue, Module module)

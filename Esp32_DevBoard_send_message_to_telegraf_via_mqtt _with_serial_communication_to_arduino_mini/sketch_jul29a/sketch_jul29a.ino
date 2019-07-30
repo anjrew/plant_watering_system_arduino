@@ -18,7 +18,6 @@
   const char *password = "56939862460419967485";
 
   const int baudRate = 115200;
-//  const int baudRate = 9600;
 
   #ifdef __cplusplus
   extern "C"
@@ -42,17 +41,8 @@
   
   PubSubClient client(wifiClient);
   
-  // SoftwareSerial mySerial(16, 17); // RX, TX
-  //HardwareSerial mySerial2(1); // RX,
-  //HardwareSerial Serial2(2);
-//  
-//  char mystr[5];
-//  int incomingByte = 0; // for incoming serial data
-//  char b;
-//  String str;
-  
   int loops = 0;
-  const int tempCheckLoops = 60000;
+  const int tempCheckLoops = 600000;
   
   
   void setup_wifi()
