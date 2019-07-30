@@ -34,15 +34,18 @@
   #define mqtt_port 11968
   #define MQTT_USER "xxtdtmwf"
   #define MQTT_PASSWORD "c-0_VSx4qaOv"
-  #define MQTT_SERIAL_PUBLISH "plants/berlin/oderstrasse/andrew"
-  #define MQTT_SERIAL_RECEIVER "plants/berlin/oderstrasse/andrew"
+  #define MQTT_SERIAL_PUBLISH_TEST "test"
+  #define MQTT_SERIAL_PUBLISH_PLANTS "plants/berlin/oderstrasse/andrew"
+  #define MQTT_SERIAL_PUBLISH_CPU "things/esp32"
+
+//  #define MQTT_SERIAL_RECEIVER "/plants/berlin/oderstrasse/andrew"
   
   WiFiClient wifiClient;
   
   PubSubClient client(wifiClient);
   
   int loops = 0;
-  const int tempCheckLoops = 600000;
+  const int tempCheckLoops = 800000;
   
   
   void setup_wifi()
@@ -81,9 +84,8 @@
               Serial.println("connected");
               
               //Once connected, publish an announcement...
+              client.publish(MQTT_SERIAL_PUBLISH_TEST, "ESP32 client");
 
-              // ... and resubscribe
-              client.subscribe(MQTT_SERIAL_RECEIVER);
           }
           else
           {
@@ -94,37 +96,18 @@
       }
   }
   
-  void callback(char *topic, byte *payload, unsigned int length)
-  {
-      Serial.println("-------new message from broker-----");
-      Serial.print("channel:");
-      Serial.println(topic);
-      Serial.print("data:");
-      Serial.write(payload, length);
-      Serial.println();
-  }
-  
   void setup()
   {
       Serial.begin(baudRate);
       Serial.setTimeout(500); // Set time out for
       setup_wifi();
       client.setServer(mqtt_server, mqtt_port);
-  //    client.setCallback(callback);
       reconnect();
   
       Serial2.begin(baudRate);
       Serial2.println("Hello, world?");
   }
   
-//  void publishSerialData(char *serialData)
-//  {
-//      if (!client.connected())
-//      {
-//          reconnect();
-//      }
-//      client.publish(MQTT_SERIAL_PUBLISH, serialData);
-//  }
   
   void readSoftwareSerial2(){ 
     if (Serial2.available()) {
@@ -133,7 +116,7 @@
         int str_len = output.length() + 1; 
         char char_array[str_len];
         output.toCharArray(char_array, str_len);
-        client.publish(MQTT_SERIAL_PUBLISH, char_array);
+        client.publish(MQTT_SERIAL_PUBLISH_PLANTS, char_array);
         delay(10);
     }
   }
@@ -150,7 +133,7 @@
     char char_array[str_len];
     influxString.toCharArray(char_array, str_len);
     Serial.println(influxString);
-    client.publish(MQTT_SERIAL_PUBLISH, char_array);
+    client.publish(MQTT_SERIAL_PUBLISH_CPU, char_array);
     delay(10);
   }
   
