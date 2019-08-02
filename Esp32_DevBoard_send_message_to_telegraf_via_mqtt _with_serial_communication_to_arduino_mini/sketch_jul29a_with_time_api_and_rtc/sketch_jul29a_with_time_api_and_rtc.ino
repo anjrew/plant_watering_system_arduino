@@ -1,6 +1,5 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <HardwareSerial.h>
 #include <HTTPClient.h>
 
 // For RTC
@@ -82,7 +81,7 @@ void loop()
 
 void setupSerialPorts() {
   Serial.begin(baudRate);
-  Serial.setTimeout(500);
+  Serial.setTimeout(1000);
   Serial2.begin(baudRate);
   Serial2.println("Hello, world?");
 }
