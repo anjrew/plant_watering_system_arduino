@@ -72,6 +72,7 @@ void loop()
   if (loops > checkLoops) {
     loops = 0;
     readCpuTemp();
+    readSystemStats();
     timeLoop();
   }
   loops++;
@@ -81,9 +82,9 @@ void loop()
 
 void setupSerialPorts() {
   Serial.begin(baudRate);
-  Serial.setTimeout(1000);
   Serial2.begin(baudRate);
   Serial2.println("Hello, world?");
+  Serial.setTimeout(1000);
 }
 
 void setupRtc () {
@@ -154,31 +155,52 @@ void reconnect()
 
 void readSoftwareSerial2() {
   if (Serial2.available()) {
-    String output = Serial2.readStringUntil('\n');
+    char output[200];
+    Serial2.readBytesUntil('\n', output, 200);
     Serial.println(output);
-    int str_len = output.length() + 1;
-    char char_array[str_len];
-    output.toCharArray(char_array, str_len);
-    client.publish(MQTT_SERIAL_PUBLISH_PLANTS, char_array);
+    client.publish(MQTT_SERIAL_PUBLISH_PLANTS, output);
     delay(10);
   }
 }
 
 
 void readCpuTemp() {
+  
   double tempInC = (temprature_sens_read() - 32) / 1.8;
-  String tempString = String(tempInC);
-  // Convert raw temperature in F to Celsius degrees
-  String influxString = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews cpu_temp_c=";
 
-  influxString += tempString;
-  int str_len = influxString.length() + 1;
-  char char_array[str_len];
-  influxString.toCharArray(char_array, str_len);
-  Serial.println(influxString);
-  client.publish(MQTT_SERIAL_PUBLISH_CPU, char_array);
+  char finalString[110];
+  char influxString[100] = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews cpu_temp_c=";
+  char tempString[10];
+  snprintf(tempString, 10, "%f", tempInC);
+  
+  strcpy(finalString,influxString);
+  strcat(finalString,tempString);
+  Serial.println(finalString);
+  client.publish(MQTT_SERIAL_PUBLISH_CPU, finalString);
   delay(10);
 }
+
+void readSystemStats(){
+  char finalString[200];
+  char influxString[100] = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews free_heap_size=";
+  
+  strcpy(finalString,influxString);
+
+  char b[20];
+  snprintf(b, 10, "%ld", xPortGetFreeHeapSize());
+  strcat(finalString,b);
+
+   strcat(finalString,",minimun_ever_free_heap_size=");
+  
+  char c[20];
+  snprintf(c, 10, "%ld", xPortGetMinimumEverFreeHeapSize());
+
+  strcat(finalString,c);
+    
+  Serial.println(finalString);
+  client.publish(MQTT_SERIAL_PUBLISH_CPU, finalString);
+  delay(10);
+  }
 
 void timeLoop () {
   int newHour = rtc.now().hour();
@@ -217,18 +239,18 @@ void calibrateTime() {
         int newHour = newDateTime.substring(11 , 13).toInt();
         int newMinutes = newDateTime.substring(14 , 16).toInt();
         int newSeconds = newDateTime.substring(17 , 19).toInt();
-//        Serial.print(newYear);
-//        Serial.println(" newYear");
-//        Serial.print(newMonth);
-//        Serial.println(" newMonth");
-//        Serial.print(newDay);
-//        Serial.println(" newDay");
-//        Serial.print(newHour);
-//        Serial.println(" newHour");
-//        Serial.print(newMinutes);
-//        Serial.println(" newMinutes");
-//        Serial.print(newSeconds);
-//        Serial.println(" newSeconds");
+        Serial.print(newYear);
+        Serial.println(" newYear");
+        Serial.print(newMonth);
+        Serial.println(" newMonth");
+        Serial.print(newDay);
+        Serial.println(" newDay");
+        Serial.print(newHour);
+        Serial.println(" newHour");
+        Serial.print(newMinutes);
+        Serial.println(" newMinutes");
+        Serial.print(newSeconds);
+        Serial.println(" newSeconds");
 
         rtc.adjust(DateTime(newYear, newMonth, newDay, newHour, newMinutes, newSeconds));
 
