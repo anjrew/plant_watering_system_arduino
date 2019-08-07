@@ -84,6 +84,7 @@ void setupSerialPorts() {
   Serial.begin(baudRate);
   Serial2.begin(baudRate);
   Serial2.println("Hello, world?");
+  delay(100);
   Serial.setTimeout(1000);
 }
 
@@ -154,12 +155,16 @@ void reconnect()
 }
 
 void readSoftwareSerial2() {
+  
   if (Serial2.available()) {
-    char output[200];
-    Serial2.readBytesUntil('\n', output, 200);
+    noInterrupts();
+    char output[255];
+    Serial2.readBytesUntil('\r', output, 255);
+    while(Serial2.read() >= 0)
     Serial.println(output);
     client.publish(MQTT_SERIAL_PUBLISH_PLANTS, output);
     delay(10);
+    interrupts();
   }
 }
 
@@ -181,7 +186,7 @@ void readCpuTemp() {
 }
 
 void readSystemStats(){
-  char finalString[200];
+  char finalString[180];
   char influxString[100] = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews free_heap_size=";
   
   strcpy(finalString,influxString);
@@ -190,7 +195,7 @@ void readSystemStats(){
   snprintf(b, 10, "%ld", xPortGetFreeHeapSize());
   strcat(finalString,b);
 
-   strcat(finalString,",minimun_ever_free_heap_size=");
+  strcat(finalString,",minimun_ever_free_heap_size=");
   
   char c[20];
   snprintf(c, 10, "%ld", xPortGetMinimumEverFreeHeapSize());

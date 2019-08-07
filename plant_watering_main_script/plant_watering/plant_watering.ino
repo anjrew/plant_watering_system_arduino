@@ -43,7 +43,8 @@ const char systemId = "plant_system";
 const float baudRate = 115200;
 
 // Time in milliseconds
-const unsigned long  loopDelayNormalSecs = 600;
+//const unsigned long  loopDelayNormalSecs = 600;
+const unsigned long  loopDelayNormalSecs = 6;
 const int loopDelayPumpmilli = 100;
 
 Module modules[MODULE_COUNT] = {
@@ -67,9 +68,11 @@ void setup()
         Serial.print(i);
         pinMode(i, OUTPUT);
         Serial.print(" is set to OUTPUT\n");
+        digitalWrite(i, HIGH);
         delay(100);
     }
     pinMode(pumpPin, OUTPUT);
+    digitalWrite(pumpPin, LOW);
     for (int i = 2; i < (MODULE_COUNT + 3); i++)
     {
         modules[i].isPumping = false;
@@ -98,7 +101,6 @@ void loop()
         Serial.print(currentModule.id);
         
         Serial.print(" ");
-        delay(10);
 
         //Fields
         Serial.print("servo_pin=");
@@ -124,8 +126,6 @@ void loop()
         Serial.print(",moisture_level=");
         Serial.print(currentModule.currentPercentage);
         
-        delay(10);
-
         if (currentModule.currentPercentage < currentModule.moistureSettingLow)
         {
             currentModule.isPumping = true;
@@ -153,7 +153,6 @@ void loop()
             //Opening servo
             Serial.print(",in_dead_zone=f");
         }
-        delay(10);
 
         byte servoPinState = digitalRead(currentModule.servoPin);
         if (servoPinState == LOW)
@@ -164,7 +163,6 @@ void loop()
         {
             Serial.print(",servo_open=f");
         } 
-        delay(10);
 
         byte pumpPinState = digitalRead(pumpPin);
         if (pumpPinState == LOW)
@@ -175,7 +173,7 @@ void loop()
         {
             Serial.println(",pump_open=t");
         }
-        delay(100);
+        delay(10);
     }
 
     if (needsPump)
