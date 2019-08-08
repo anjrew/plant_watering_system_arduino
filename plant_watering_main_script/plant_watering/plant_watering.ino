@@ -43,8 +43,8 @@ const char systemId = "plant_system";
 const float baudRate = 115200;
 
 // Time in milliseconds
-const unsigned long  loopDelayNormalSecs = 600;
-//const unsigned long  loopDelayNormalSecs = 6;
+//const unsigned long  loopDelayNormalSecs = 600;
+const unsigned long  loopDelayNormalSecs = 6;
 const int loopDelayPumpmilli = 100;
 
 Module modules[MODULE_COUNT] = {
@@ -52,7 +52,7 @@ Module modules[MODULE_COUNT] = {
     Module(A1, 0, '2', 70, 3, 640, 323, 40, false, "unknown"),    /// Checked sensor values 2/6/2019 Plant two - Hanging plant
     Module(A2, 0, '3', 70, 4, 622, 318, 40, false, "unknown"),
     Module(A3, 0, '4', 90, 5, 664, 339, 60, false, "various"),    // Big plant bed
-    Module(A4, 0, '5', 70, 6, 672, 323, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 bonsai
+    Module(A4, 0, '5', 70, 6, 672, 308, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 bonsai
     Module(A5, 0, '6', 60, 7, 700, 372, 30, false, "cactus"),     // Checked sensor values 2/6/2019 Cactus
     Module(A6, 0, '7', 70, 8, 597, 287, 40, false, "peace_lily"), // Checked sensor values 8/5/2019 Peace Lily
     //        Module(A7,0,'8', 50, 9, 882, 734),
@@ -120,6 +120,7 @@ void loop()
 
         Serial.print(",sensor_low_value=");
         Serial.print(currentModule.sensorUpperValue);
+        delay(1);
 
         currentModule.currentPercentage = convertToPercent(analogRead(currentModule.readPin), currentModule);
 
@@ -165,6 +166,7 @@ void loop()
         } 
 
         byte pumpPinState = digitalRead(pumpPin);
+        
         if (pumpPinState == LOW)
         {
             Serial.println(",pump_open=f");

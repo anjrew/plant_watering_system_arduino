@@ -62,8 +62,8 @@ char* timeApiEndP = "http://worldtimeapi.org/api/ip";
 PubSubClient client(wifiClient);
 
 int loops = 0;
-//const int checkLoops = 800000;
-const int checkLoops = 80000;
+const int checkLoops = 2000000;
+//const int checkLoops = 80000;
 
 void setup()
 {
@@ -183,7 +183,7 @@ void readSoftwareSerial2() {
     while (Serial2.read() >= 0)
     Serial.println(output);
     client.publish(MQTT_SERIAL_PUBLISH_PLANTS, output);
-    delay(10);
+//    delay(10);
     interrupts();
   }
 }
