@@ -43,8 +43,8 @@ const char systemId = "plant_system";
 const float baudRate = 115200;
 
 // Time in milliseconds
-//const unsigned long  loopDelayNormalSecs = 600;
-const unsigned long  loopDelayNormalSecs = 6;
+const unsigned long  loopDelayNormalSecs = 600;
+//const unsigned long  loopDelayNormalSecs = 6;
 const int loopDelayPumpmilli = 100;
 
 Module modules[MODULE_COUNT] = {

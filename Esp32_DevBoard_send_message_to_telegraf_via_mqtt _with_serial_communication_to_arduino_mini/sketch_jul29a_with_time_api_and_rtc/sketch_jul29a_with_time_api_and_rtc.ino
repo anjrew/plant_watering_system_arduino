@@ -2,6 +2,14 @@
 #include <PubSubClient.h>
 #include <HTTPClient.h>
 
+// For Temparature
+#include "DHTesp.h"
+//#define DHTTYPE DHT22
+uint8_t DHTPin = 4;
+DHTesp dht;
+float Temperature;
+float Humidity;
+
 // For RTC
 #include <Wire.h>  // for I2C with RTC module
 #include "RTClib.h"
@@ -40,6 +48,8 @@ const char *mqtt_server = "postman.cloudmqtt.com";
 #define MQTT_SERIAL_PUBLISH_TEST "test"
 #define MQTT_SERIAL_PUBLISH_PLANTS "plants/berlin/oderstrasse/andrew"
 #define MQTT_SERIAL_PUBLISH_CPU "things/esp32"
+#define MQTT_SERIAL_PUBLISH_PLACE "places/berlin/oderstrasse/andrew"
+
 
 // Wifi
 WiFiClient wifiClient;
@@ -54,7 +64,8 @@ char* timeApiEndP = "http://worldtimeapi.org/api/ip";
 PubSubClient client(wifiClient);
 
 int loops = 0;
-const int checkLoops = 800000;
+//const int checkLoops = 800000;
+const int checkLoops = 80000;
 
 void setup()
 {
@@ -63,6 +74,7 @@ void setup()
   client.setServer(mqtt_server, mqtt_port);
   reconnect();
   setupRtc ();
+  setupEnviromentreading();
 }
 
 
@@ -79,12 +91,19 @@ void loop()
   readSoftwareSerial2();
 }
 
+void setupEnviromentreading(){
+  dht.setup(DHTPin, DHTesp::DHT22);
+  }
+
 
 void setupSerialPorts() {
   Serial.begin(baudRate);
   Serial2.begin(baudRate);
+  delay(100);
   Serial2.println("Hello, world?");
   delay(100);
+  //  pinMode(DHTPin, INPUT);
+  //  dht.begin();
   Serial.setTimeout(1000);
 }
 
@@ -155,57 +174,131 @@ void reconnect()
 }
 
 void readSoftwareSerial2() {
-  
+
   if (Serial2.available()) {
+
     noInterrupts();
     char output[255];
     Serial2.readBytesUntil('\r', output, 255);
-    while(Serial2.read() >= 0)
-    Serial.println(output);
+    while (Serial2.read() >= 0)
+      Serial.println(output);
     client.publish(MQTT_SERIAL_PUBLISH_PLANTS, output);
     delay(10);
     interrupts();
   }
 }
+//
+//void readEnviroment() {
+//
+//  float temperature = dht.readTemperature(); // Gets the values of the temperature
+//  float humidity = dht.readHumidity(); // Gets the values of the humidity
+//  char finalString[120];
+//  char influxString[100] = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews temp_c=";
+//  char tempString[10];
+//  snprintf(tempString, 10, "%f", temperature);
+//  char humidString[10];
+//  snprintf(humidString, 10, "%f", humidity);
+//  strcpy(finalString,influxString);
+//  strcat(finalString,tempString);
+//  strcat(finalString,",humidity=");
+//  strcat(finalString,humidString);
+//  Serial.println(finalString);
+//  client.publish(MQTT_SERIAL_PUBLISH_PLACE, finalString);
+//  delay(10);
+//}
 
 
 void readCpuTemp() {
-  
+
   double tempInC = (temprature_sens_read() - 32) / 1.8;
 
   char finalString[110];
   char influxString[100] = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews cpu_temp_c=";
   char tempString[10];
   snprintf(tempString, 10, "%f", tempInC);
-  
-  strcpy(finalString,influxString);
-  strcat(finalString,tempString);
+
+  strcpy(finalString, influxString);
+  strcat(finalString, tempString);
   Serial.println(finalString);
   client.publish(MQTT_SERIAL_PUBLISH_CPU, finalString);
   delay(10);
 }
 
-void readSystemStats(){
+void resetHeap() {
+  heap_caps_dump_all();
+}
+
+void readSystemStats() {
   char finalString[180];
   char influxString[100] = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews free_heap_size=";
-  
-  strcpy(finalString,influxString);
+
+  strcpy(finalString, influxString);
 
   char b[20];
-  snprintf(b, 10, "%ld", xPortGetFreeHeapSize());
-  strcat(finalString,b);
+  snprintf(b, 20, "%ld", xPortGetFreeHeapSize());
+  strcat(finalString, b);
 
-  strcat(finalString,",minimun_ever_free_heap_size=");
-  
+  strcat(finalString, ",minimun_ever_free_heap_size=");
   char c[20];
-  snprintf(c, 10, "%ld", xPortGetMinimumEverFreeHeapSize());
+  snprintf(c, 20, "%ld", xPortGetMinimumEverFreeHeapSize());
+  strcat(finalString, c);
 
-  strcat(finalString,c);
-    
+  strcat(finalString, ",heap_cap_intergrity=");
+  char d[20];
+  snprintf(d, 20, "%ld", heap_caps_check_integrity_all(true));
+  strcat(finalString, d);
+
+//  strcat(finalString, ",heap_caps_free_size_8=");
+//  char e[20];
+//  snprintf(e, 20, "%ld", heap_caps_get_free_size(MALLOC_CAP_8BIT));
+//  strcat(finalString, e);
+//
+//  strcat(finalString, ",heap_caps_free_size_32=");
+//  char f[20];
+//  snprintf(f, 20, "%ld", heap_caps_get_free_size(MALLOC_CAP_32BIT));
+//  strcat(finalString, f);
+//
+//  strcat(finalString, ",dRAM=");
+//  char g[20];
+//  double dram = static_cast<double>(heap_caps_get_free_size(MALLOC_CAP_8BIT));
+//  snprintf(g, 20, "%ld", dram);
+//  strcat(finalString, g);
+//
+//
+//  strcat(finalString, ",dRAM_iRAM=");
+//  char h[20];
+//  double dramIram = static_cast<double>(heap_caps_get_free_size(MALLOC_CAP_32BIT));
+//  snprintf(h, 20, "%ld", dramIram);
+//  strcat(finalString, h);
+//
+//  char i[20];
+//  strcat(finalString, ",iRAM=");
+//  double iram = dramIram - dram;
+//  snprintf(i, 20, "%ld", iram);
+//  strcat(finalString, i);
+////
+//  strcat(finalString, ",heap_caps_largest_free_block=");
+//  char j[20];
+//  snprintf(j, 20, "%ld",   heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+//  strcat(finalString, j);
+//
+//  strcat(finalString, ",heap_caps_largest_free_block=");
+//  char k[20];
+//  snprintf(k, 20, "%ld",   heap_caps_get_largest_free_block(MALLOC_CAP_32BIT));
+//  strcat(finalString, k);
+
+//  strcat(finalString, ",heap_caps_info=");
+//  char l[20];
+//  snprintf(l, 20, "%ld",   heap_caps_print_heap_info(MALLOC_CAP_INTERNAL));
+//  strcat(finalString, l);
+  Serial.print("uxTaskGetStackHighWaterMark");
+  Serial.println(uxTaskGetStackHighWaterMark(NULL));
+
   Serial.println(finalString);
   client.publish(MQTT_SERIAL_PUBLISH_CPU, finalString);
   delay(10);
-  }
+}
+
 
 void timeLoop () {
   int newHour = rtc.now().hour();
@@ -274,9 +367,7 @@ void calibrateTime() {
   delay(10);
 }
 
-void getYear(String string) {
 
-}
 
 String extractDateTime(String string) {
   int startIndex = string.lastIndexOf("\"datetime\":\"");
