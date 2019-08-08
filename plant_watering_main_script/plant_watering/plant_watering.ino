@@ -90,7 +90,7 @@ void loop()
         Module currentModule = modules[i];
         int totalChar = strlen(systemId);
         // Project /
-        Serial.print("plant_system");
+        Serial.print("<plant_system");
         //Tags /
         Serial.print(",city=Berlin");
         Serial.print(",location=oderstrasse");
@@ -169,11 +169,11 @@ void loop()
         
         if (pumpPinState == LOW)
         {
-            Serial.println(",pump_open=f");
+            Serial.println(",pump_open=f>");
         }
         else
         {
-            Serial.println(",pump_open=t");
+            Serial.println(",pump_open=t>");
         }
         delay(10);
     }

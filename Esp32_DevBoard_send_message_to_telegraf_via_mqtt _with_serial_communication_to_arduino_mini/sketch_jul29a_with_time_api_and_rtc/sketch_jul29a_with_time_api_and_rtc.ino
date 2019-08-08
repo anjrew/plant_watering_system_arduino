@@ -64,6 +64,9 @@ PubSubClient client(wifiClient);
 int loops = 0;
 const int checkLoops = 2000000;
 //const int checkLoops = 80000;
+const byte numChars = 255;
+char receivedChars[numChars];
+boolean newData = false;
 
 void setup()
 {
@@ -177,16 +180,59 @@ void readSoftwareSerial2() {
   if (Serial2.available()) {
 
     noInterrupts();
-    char output[255];
-    Serial2.readBytesUntil('\r', output, 255);
-    // Flush the serial
-    while (Serial2.read() >= 0)
-    Serial.println(output);
-    client.publish(MQTT_SERIAL_PUBLISH_PLANTS, output);
+//    char output[255];
+//    Serial2.readBytesUntil('\r', output, 255);
+//    // Flush the serial
+//    while (Serial2.read() >= 0)
+//    Serial.println(output);
+    recvWithStartEndMarkers();
+    showNewData();
+//    client.publish(MQTT_SERIAL_PUBLISH_PLANTS, output);
 //    delay(10);
     interrupts();
   }
 }
+
+void recvWithStartEndMarkers() {
+    static boolean recvInProgress = false;
+    static byte ndx = 0;
+    char startMarker = '<';
+    char endMarker = '>';
+    char rc;
+ 
+    while (Serial2.available() > 0 && newData == false) {
+        rc = Serial2.read();
+
+        if (recvInProgress == true) {
+            if (rc != endMarker) {
+                receivedChars[ndx] = rc;
+                ndx++;
+                if (ndx >= numChars) {
+                    ndx = numChars - 1;
+                }
+            }
+            else {
+                receivedChars[ndx] = '\0'; // terminate the string
+                recvInProgress = false;
+                ndx = 0;
+                newData = true;
+            }
+        }
+
+        else if (rc == startMarker) {
+            recvInProgress = true;
+        }
+    }
+}
+
+void showNewData() {
+    if (newData == true) {
+        Serial.println(receivedChars);
+        client.publish(MQTT_SERIAL_PUBLISH_PLANTS, receivedChars);
+        newData = false;
+    }
+}
+
 
 void readEnviroment() {
   TempAndHumidity lastValues = dht.getTempAndHumidity();
