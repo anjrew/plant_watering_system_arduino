@@ -25,8 +25,6 @@ int currentHour = 12;
 //const char* ssid = "BrightBox-9sbpsc";
 //const char* password = "tag-dread-tame";
 
-// Oder 47
-
 
 const int baudRate = 115200;
 
@@ -85,6 +83,7 @@ void loop()
     loops = 0;
     readCpuTemp();
     readSystemStats();
+    readEnviroment();
 //    timeLoop();
   }
   loops++;
@@ -180,32 +179,37 @@ void readSoftwareSerial2() {
     noInterrupts();
     char output[255];
     Serial2.readBytesUntil('\r', output, 255);
+    // Flush the serial
     while (Serial2.read() >= 0)
-      Serial.println(output);
+    Serial.println(output);
     client.publish(MQTT_SERIAL_PUBLISH_PLANTS, output);
     delay(10);
     interrupts();
   }
 }
-//
-//void readEnviroment() {
-//
+
+void readEnviroment() {
+  TempAndHumidity lastValues = dht.getTempAndHumidity();
+
 //  float temperature = dht.readTemperature(); // Gets the values of the temperature
 //  float humidity = dht.readHumidity(); // Gets the values of the humidity
-//  char finalString[120];
-//  char influxString[100] = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews temp_c=";
-//  char tempString[10];
-//  snprintf(tempString, 10, "%f", temperature);
-//  char humidString[10];
-//  snprintf(humidString, 10, "%f", humidity);
-//  strcpy(finalString,influxString);
-//  strcat(finalString,tempString);
-//  strcat(finalString,",humidity=");
-//  strcat(finalString,humidString);
-//  Serial.println(finalString);
-//  client.publish(MQTT_SERIAL_PUBLISH_PLACE, finalString);
-//  delay(10);
-//}
+
+  float temperature = lastValues.temperature;
+  float humidity = lastValues.humidity; 
+  char finalString[140];
+  char influxString[120] = "places,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews,sensor=dht22 temp_c=";
+  char tempString[10];
+  snprintf(tempString, 10, "%f", temperature);
+  char humidString[10];
+  snprintf(humidString, 10, "%f", humidity);
+  strcpy(finalString,influxString);
+  strcat(finalString,tempString);
+  strcat(finalString,",humidity=");
+  strcat(finalString,humidString);
+  Serial.println(finalString);
+  client.publish(MQTT_SERIAL_PUBLISH_PLACE, finalString);
+  delay(10);
+}
 
 
 void readCpuTemp() {
@@ -233,7 +237,7 @@ void addToMainString(char mainString[], double toAdd){
   }
 
 void readSystemStats() {
-  char finalString[500];
+  char finalString[400];
 
   strcpy(finalString, "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews free_heap_size=");
 
@@ -280,11 +284,11 @@ void readSystemStats() {
   snprintf(i, 20, "%ld", iram);
   strcat(finalString, i);
 
-//  strcat(finalString, ",heap_caps_largest_free_block_8=");
-//  char j[20];
-//  snprintf(j, 20, "%ld",   heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-//  strcat(finalString, j);
-////
+  strcat(finalString, ",heap_caps_largest_free_block_8=");
+  char j[20];
+  snprintf(j, 20, "%ld",   heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+  strcat(finalString, j);
+
   strcat(finalString, ",heap_caps_largest_free_block_32=");
   char k[20];
   snprintf(k, 20, "%ld",   heap_caps_get_largest_free_block(MALLOC_CAP_32BIT));
