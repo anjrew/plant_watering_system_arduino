@@ -85,7 +85,7 @@ void loop()
     loops = 0;
     readCpuTemp();
     readSystemStats();
-    timeLoop();
+//    timeLoop();
   }
   loops++;
   readSoftwareSerial2();
@@ -228,11 +228,14 @@ void resetHeap() {
   heap_caps_dump_all();
 }
 
-void readSystemStats() {
-  char finalString[180];
-  char influxString[100] = "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews free_heap_size=";
+void addToMainString(char mainString[], double toAdd){
+  
+  }
 
-  strcpy(finalString, influxString);
+void readSystemStats() {
+  char finalString[500];
+
+  strcpy(finalString, "things,thing-id=andrews-esp32-nodemcu,city=berlin,location=oderstrasse,room=andrews free_heap_size=");
 
   char b[20];
   snprintf(b, 20, "%ld", xPortGetFreeHeapSize());
@@ -248,52 +251,50 @@ void readSystemStats() {
   snprintf(d, 20, "%ld", heap_caps_check_integrity_all(true));
   strcat(finalString, d);
 
-//  strcat(finalString, ",heap_caps_free_size_8=");
-//  char e[20];
-//  snprintf(e, 20, "%ld", heap_caps_get_free_size(MALLOC_CAP_8BIT));
-//  strcat(finalString, e);
-//
-//  strcat(finalString, ",heap_caps_free_size_32=");
-//  char f[20];
-//  snprintf(f, 20, "%ld", heap_caps_get_free_size(MALLOC_CAP_32BIT));
-//  strcat(finalString, f);
-//
-//  strcat(finalString, ",dRAM=");
-//  char g[20];
-//  double dram = static_cast<double>(heap_caps_get_free_size(MALLOC_CAP_8BIT));
-//  snprintf(g, 20, "%ld", dram);
-//  strcat(finalString, g);
-//
-//
-//  strcat(finalString, ",dRAM_iRAM=");
-//  char h[20];
-//  double dramIram = static_cast<double>(heap_caps_get_free_size(MALLOC_CAP_32BIT));
-//  snprintf(h, 20, "%ld", dramIram);
-//  strcat(finalString, h);
-//
-//  char i[20];
-//  strcat(finalString, ",iRAM=");
-//  double iram = dramIram - dram;
-//  snprintf(i, 20, "%ld", iram);
-//  strcat(finalString, i);
-////
-//  strcat(finalString, ",heap_caps_largest_free_block=");
+  strcat(finalString, ",heap_caps_free_size_8=");
+  char e[20];
+  snprintf(e, 20, "%ld", heap_caps_get_free_size(MALLOC_CAP_8BIT));
+  strcat(finalString, e);
+
+  strcat(finalString, ",heap_caps_free_size_32=");
+  char f[20];
+  snprintf(f, 20, "%ld", heap_caps_get_free_size(MALLOC_CAP_32BIT));
+  strcat(finalString, f);
+
+  strcat(finalString, ",dRAM=");
+  char g[20];
+  double dram = static_cast<double>(heap_caps_get_free_size(MALLOC_CAP_8BIT));
+  snprintf(g, 20, "%ld", dram);
+  strcat(finalString, g);
+
+
+  strcat(finalString, ",dRAM_iRAM=");
+  char h[20];
+  double dramIram = static_cast<double>(heap_caps_get_free_size(MALLOC_CAP_32BIT));
+  snprintf(h, 20, "%ld", dramIram);
+  strcat(finalString, h);
+
+  char i[20];
+  strcat(finalString, ",iRAM=");
+  double iram = dramIram - dram;
+  snprintf(i, 20, "%ld", iram);
+  strcat(finalString, i);
+
+//  strcat(finalString, ",heap_caps_largest_free_block_8=");
 //  char j[20];
 //  snprintf(j, 20, "%ld",   heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
 //  strcat(finalString, j);
-//
-//  strcat(finalString, ",heap_caps_largest_free_block=");
-//  char k[20];
-//  snprintf(k, 20, "%ld",   heap_caps_get_largest_free_block(MALLOC_CAP_32BIT));
-//  strcat(finalString, k);
+////
+  strcat(finalString, ",heap_caps_largest_free_block_32=");
+  char k[20];
+  snprintf(k, 20, "%ld",   heap_caps_get_largest_free_block(MALLOC_CAP_32BIT));
+  strcat(finalString, k);
 
-//  strcat(finalString, ",heap_caps_info=");
-//  char l[20];
-//  snprintf(l, 20, "%ld",   heap_caps_print_heap_info(MALLOC_CAP_INTERNAL));
-//  strcat(finalString, l);
-  Serial.print("uxTaskGetStackHighWaterMark");
-  Serial.println(uxTaskGetStackHighWaterMark(NULL));
-
+  strcat(finalString, ",smlst_free_mem_stack=");
+  char l[20];
+  snprintf(l, 20, "%ld",  uxTaskGetStackHighWaterMark(NULL));
+  strcat(finalString, l);
+    
   Serial.println(finalString);
   client.publish(MQTT_SERIAL_PUBLISH_CPU, finalString);
   delay(10);
