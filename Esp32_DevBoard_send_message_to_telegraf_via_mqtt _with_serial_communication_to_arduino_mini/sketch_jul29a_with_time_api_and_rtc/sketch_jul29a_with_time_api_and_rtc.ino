@@ -1,6 +1,6 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <HTTPClient.h>
+#include <HTTPClient.h>ß
 
 // For Temparature
 #include "DHTesp.h"
@@ -154,7 +154,9 @@ void reconnect()
     Serial.print("Attempting MQTT connection...");
 
     // Create a random client ID
-    String clientId = "ESP32Client-";
+    String clientId;
+    clientId.reserve(30);
+    clientId = "ESP32Client-";
     clientId += String(random(0xffff), HEX);
 
     // Attempt to connect
@@ -377,9 +379,13 @@ void calibrateTime() {
 
     if (httpCode > 0) { //Check for the returning code
 
-      String payload = http.getString();
+      String payload;
+      payload.reserve ( 300 );
+      payload =  http.getString();
       if (httpCode == 200) {
-        String newDateTime = extractDateTime(payload);
+        String newDateTime;
+        newDateTime.reserve( 300 );
+        newDateTime = extractDateTime(payload);
         Serial.println(newDateTime);
 
         int newYear = newDateTime.substring(0 , 4).toInt();
