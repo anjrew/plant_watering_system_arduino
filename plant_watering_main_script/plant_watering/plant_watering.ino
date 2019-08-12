@@ -134,7 +134,7 @@ void loop()
             digitalWrite(currentModule.servoPin, LOW);
 
             //Opening servo
-            Serial.print(",in_dead_zone=f");
+            Serial.print(",in_dead_zone=0");
         }
         if (currentModule.currentPercentage >= currentModule.moistureSettingLow && currentModule.currentPercentage <= currentModule.moistureSettingHigh)
         {
@@ -144,7 +144,7 @@ void loop()
             }
 
             //the deadzone
-            Serial.print(",in_dead_zone=t");
+            Serial.print(",in_dead_zone=1");
         }
         if (currentModule.currentPercentage > currentModule.moistureSettingHigh)
         {
@@ -152,28 +152,28 @@ void loop()
             digitalWrite(currentModule.servoPin, HIGH);
 
             //Opening servo
-            Serial.print(",in_dead_zone=f");
+            Serial.print(",in_dead_zone=0");
         }
 
         byte servoPinState = digitalRead(currentModule.servoPin);
         if (servoPinState == LOW)
         {
-            Serial.print(",servo_open=t");
+            Serial.print(",servo_open=1");
         }
         else
         {
-            Serial.print(",servo_open=f");
+            Serial.print(",servo_open=0");
         } 
 
         byte pumpPinState = digitalRead(pumpPin);
         
         if (pumpPinState == LOW)
         {
-            Serial.println(",pump_open=f>");
+            Serial.println(",pump_open=0>");
         }
         else
         {
-            Serial.println(",pump_open=t>");
+            Serial.println(",pump_open=1>");
         }
         delay(10);
     }
