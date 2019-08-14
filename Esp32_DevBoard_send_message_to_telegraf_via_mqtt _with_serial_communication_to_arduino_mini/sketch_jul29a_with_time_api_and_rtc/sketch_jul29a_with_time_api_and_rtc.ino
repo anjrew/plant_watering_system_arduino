@@ -1,6 +1,6 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <HTTPClient.h>ß
+#include <HTTPClient.h>
 
 // For Temparature
 #include "DHTesp.h"
@@ -15,6 +15,9 @@ float Humidity;
 #include "RTClib.h"
 RTC_DS3231 rtc;
 int currentHour = 12;
+uint8_t LED_ONE = 2;
+uint8_t LED_TWO = 16;
+
 
 // Update these with values suitable for your network.
 // Monkey Park
@@ -87,9 +90,15 @@ void loop()
         readEnviroment();
         // recordOutsideWeather();
         timeLoop();
+        ledFlash();
     }
     loops++;
     readSoftwareSerial2();
+}
+
+void setupLeds(){
+    pinMode(LED_TWO, OUTPUT);     // Initialize the LED_BUILTIN pin as an outputß
+    pinMode(LED_ONE, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
 }
 
 void setupEnviromentreading()
@@ -101,6 +110,7 @@ void setupSerialPorts()
 {
     Serial.begin(baudRate);
     Serial2.begin(baudRate);
+    Serial2.setRxBufferSize(1024);
     delay(100);
     Serial2.println("Hello, world?");
     delay(100);
@@ -144,6 +154,15 @@ void setup_wifi()
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
+}
+
+void ledFlash(){
+    digitalWrite(LED_ONE, LOW);
+    delay(500);
+    digitalWrite(LED_ONE, HIGH);
+    digitalWrite(LED_TWO, LOW);
+    delay(500);
+    digitalWrite(LED_TWO, HIGH);
 }
 
 void reconnect()

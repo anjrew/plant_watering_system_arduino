@@ -48,10 +48,10 @@ const unsigned long  loopDelayNormalSecs = 600;
 const int loopDelayPumpmilli = 100;
 
 Module modules[MODULE_COUNT] = {
-    Module(A0, 0, '1', 70, 2, 622, 323, 40, false, "unknown"),
-    Module(A1, 0, '2', 70, 3, 640, 323, 40, false, "unknown"),    /// Checked sensor values 2/6/2019 Plant two - Hanging plant
-    Module(A2, 0, '3', 70, 4, 622, 318, 40, false, "unknown"),
-    Module(A3, 0, '4', 90, 5, 664, 339, 60, false, "various"),    // Big plant bed
+    Module(A0, 0, '1', 70, 2, 622, 323, 40, false, "scindapsus"),
+    Module(A1, 0, '2', 70, 3, 640, 323, 40, false, "scindapsus"),    /// Checked sensor values 2/6/2019 Plant two - Hanging plant
+    Module(A2, 0, '3', 70, 4, 622, 312, 40, false, "scindapsus"),
+    Module(A3, 0, '4', 90, 5, 664, 339, 60, false, "tray"),    // Big plant bed
     Module(A4, 0, '5', 70, 6, 672, 308, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 bonsai
     Module(A5, 0, '6', 60, 7, 700, 372, 30, false, "cactus"),     // Checked sensor values 2/6/2019 Cactus
     Module(A6, 0, '7', 70, 8, 597, 287, 40, false, "peace_lily"), // Checked sensor values 8/5/2019 Peace Lily
@@ -119,6 +119,9 @@ void loop()
         Serial.print(currentModule.moistureSettingLow);
 
         Serial.print(",sensor_low_value=");
+        Serial.print(currentModule.sensorLowerValue);
+
+        Serial.print(",sensor_high_value=");
         Serial.print(currentModule.sensorUpperValue);
         delay(1);
 
@@ -134,7 +137,7 @@ void loop()
             digitalWrite(currentModule.servoPin, LOW);
 
             //Opening servo
-            Serial.print(",in_dead_zone=0");
+            Serial.print(",dead_zone=0");
         }
         if (currentModule.currentPercentage >= currentModule.moistureSettingLow && currentModule.currentPercentage <= currentModule.moistureSettingHigh)
         {
@@ -144,7 +147,7 @@ void loop()
             }
 
             //the deadzone
-            Serial.print(",in_dead_zone=1");
+            Serial.print(",dead_zone=1");
         }
         if (currentModule.currentPercentage > currentModule.moistureSettingHigh)
         {
@@ -152,28 +155,28 @@ void loop()
             digitalWrite(currentModule.servoPin, HIGH);
 
             //Opening servo
-            Serial.print(",in_dead_zone=0");
+            Serial.print(",dead_zone=0");
         }
 
         byte servoPinState = digitalRead(currentModule.servoPin);
         if (servoPinState == LOW)
         {
-            Serial.print(",servo_open=1");
+            Serial.print(",servo=1");
         }
         else
         {
-            Serial.print(",servo_open=0");
+            Serial.print(",servo=0");
         } 
 
         byte pumpPinState = digitalRead(pumpPin);
         
         if (pumpPinState == LOW)
         {
-            Serial.println(",pump_open=0>");
+            Serial.println(",pump=0>");
         }
         else
         {
-            Serial.println(",pump_open=1>");
+            Serial.println(",pump=1>");
         }
         delay(10);
     }
