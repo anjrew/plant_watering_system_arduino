@@ -18,6 +18,10 @@ int currentHour = 12;
 uint8_t LED_ONE = 2;
 uint8_t LED_TWO = 16;
 
+// FOR DISTANCE
+#define TRIG_PIN = 26;
+#define ECHO_PIN = 27;
+ 
 
 // Update these with values suitable for your network.
 // Monkey Park
@@ -77,10 +81,15 @@ void setup()
     reconnect();
     setupRtc();
     setupEnviromentreading();
+    setupDistancePins();
 }
 
 void loop()
-{
+{   
+    if (loops % 1000){
+        distanceLoop();
+    }
+
     client.loop();
     if (loops > checkLoops)
     {
@@ -92,8 +101,42 @@ void loop()
         timeLoop();
         ledFlash();
     }
+
     loops++;
     readSoftwareSerial2();
+}
+
+void distanceLoop{
+   long duration, distanceCm, distanceIn;
+ 
+  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  duration = pulseIn(ECHO_PIN,HIGH);
+ 
+  // convert the time into a distance
+  distanceCm = duration / 29.1 / 2 ;
+  distanceIn = duration / 74 / 2;
+ 
+  if (distanceCm <= 0){
+    Serial.println("Out of range");
+  }
+  else {
+    Serial.print(distanceIn);
+    Serial.print("in, ");
+    Serial.print(distanceCm);
+    Serial.print("cm");
+    Serial.println();
+  }
+  delay(1000);
+}
+
+void setupDistancePins() {
+  pinMode(TRIG_PIN,OUTPUT);
+  pinMode(ECHO_PIN,INPUT);
 }
 
 void setupLeds(){

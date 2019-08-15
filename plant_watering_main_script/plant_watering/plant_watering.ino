@@ -4,6 +4,8 @@
 // https://github.com/earyzhe/plant_watering_system_arduino
 
 ////////////////////////////////////////////////////////////////////
+#define SYSTEMID "nano-01"
+
 
 class Module
 {
@@ -92,18 +94,18 @@ void loop()
         // Project /
         Serial.print("<plant_system");
         //Tags /
-        Serial.print(",city=Berlin");
-        Serial.print(",location=oderstrasse");
-        Serial.print(",room=andrews");
-        Serial.print(",plant_type=");
+        Serial.print(",thing=");
+        Serial.print(SYSTEMID);
+        
+        Serial.print(",plnt_typ=");
         Serial.print(currentModule.plantType);
-        Serial.print(",plant_id=");
+        Serial.print(",id=");
         Serial.print(currentModule.id);
         
         Serial.print(" ");
 
         //Fields
-        Serial.print("servo_pin=");
+        Serial.print("serv_pin=");
         Serial.print(currentModule.servoPin);
 
         Serial.print(",read_pin=");
@@ -112,22 +114,22 @@ void loop()
         Serial.print(",sensor_reading=");
         Serial.print(analogRead(currentModule.readPin));
 
-        Serial.print(",moi_setting_high=");
+        Serial.print(",moi_set_hi=");
         Serial.print(currentModule.moistureSettingHigh);
 
-        Serial.print(",moi_setting_low=");
+        Serial.print(",moi_set_lo=");
         Serial.print(currentModule.moistureSettingLow);
 
-        Serial.print(",sensor_low_value=");
+        Serial.print(",sens_lo_val=");
         Serial.print(currentModule.sensorLowerValue);
 
-        Serial.print(",sensor_high_value=");
+        Serial.print(",sens_hi_val=");
         Serial.print(currentModule.sensorUpperValue);
         delay(1);
 
         currentModule.currentPercentage = convertToPercent(analogRead(currentModule.readPin), currentModule);
 
-        Serial.print(",moisture_level=");
+        Serial.print(",moi_lvl=");
         Serial.print(currentModule.currentPercentage);
         
         if (currentModule.currentPercentage < currentModule.moistureSettingLow)
@@ -147,7 +149,7 @@ void loop()
             }
 
             //the deadzone
-            Serial.print(",dead_zone=1");
+            Serial.print(",ded_zn=1");
         }
         if (currentModule.currentPercentage > currentModule.moistureSettingHigh)
         {
@@ -155,7 +157,7 @@ void loop()
             digitalWrite(currentModule.servoPin, HIGH);
 
             //Opening servo
-            Serial.print(",dead_zone=0");
+            Serial.print(",ded_zn=0");
         }
 
         byte servoPinState = digitalRead(currentModule.servoPin);
@@ -172,11 +174,11 @@ void loop()
         
         if (pumpPinState == LOW)
         {
-            Serial.println(",pump=0>");
+            Serial.println(",pmp=0>");
         }
         else
         {
-            Serial.println(",pump=1>");
+            Serial.println(",pmp=1>");
         }
         delay(10);
     }
