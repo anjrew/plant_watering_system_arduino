@@ -45,8 +45,8 @@ const float baudRate = 115200;
 bool isSleeping = false;
 
 // Time in milliseconds
-//const unsigned long  loopDelayNormalSecs = 600;
-const unsigned long  loopDelayNormalSecs = 1;
+const unsigned long  loopDelayNormalSecs = 600;
+//const unsigned long  loopDelayNormalSecs = 1;
 const int loopDelayPumpmilli = 100;
 
 Module modules[MODULE_COUNT] = {
