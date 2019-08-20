@@ -54,7 +54,7 @@ Module modules[MODULE_COUNT] = {
   Module(A1, 0, '2', 70, 3, 640, 323, 40, false, "scindapsus"),    /// Checked sensor values 2/6/2019 Plant two - Hanging plant
   Module(A2, 0, '3', 70, 4, 622, 312, 40, false, "scindapsus"),
   Module(A3, 0, '4', 90, 5, 664, 339, 60, false, "tray"),    // Big plant bed
-  Module(A4, 0, '5', 70, 6, 672, 217, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 bonsai
+  Module(A4, 0, '5', 70, 6, 672, 165, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 bonsai
   Module(A5, 0, '6', 60, 7, 700, 372, 30, false, "cactus"),     // Checked sensor values 2/6/2019 Cactus
   Module(A6, 0, '7', 70, 8, 597, 287, 40, false, "peace_lily"), // Checked sensor values 8/5/2019 Peace Lily
   //        Module(A7,0,'8', 50, 9, 882, 734),
@@ -71,22 +71,18 @@ void setup()
     pinMode(i, OUTPUT);
     Serial.print(" is set to OUTPUT\n");
     digitalWrite(i, HIGH);
+     modules[i].isPumping = false;
+
     delay(100);
   }
   pinMode(pumpPin, OUTPUT);
   digitalWrite(pumpPin, LOW);
-  for (int i = 2; i < (MODULE_COUNT + 3); i++)
-  {
-    modules[i].isPumping = false;
-  }
   Serial.println("Finished setup");
 }
 
 void loop()
 {
-  if (!isSleeping) {
-    checkPlants();
-  }
+  checkPlants();
   if (Serial.available() > 0) {
     recvWithStartEndMarkers();
   }
@@ -151,7 +147,7 @@ void checkPlants() {
     Serial.print(",moi_lvl=");
     Serial.print(currentModule.currentPercentage);
 
-    if (currentModule.currentPercentage < currentModule.moistureSettingLow)
+    if (currentModule.currentPercentage < currentModule.moistureSettingLow && !isSleeping)
     {
       currentModule.isPumping = true;
       needsPump = true;
