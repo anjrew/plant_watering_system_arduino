@@ -187,13 +187,13 @@ void checkPlants() {
 
     byte pumpPinState = digitalRead(pumpPin);
 
-    if (pumpPinState == LOW)
+    if (currentModule.isPumping)
     {
-      Serial.println(",pmp=0>");
+       Serial.println(",pmp=1>");
     }
     else
     {
-      Serial.println(",pmp=1>");
+      Serial.println(",pmp=0>");
     }
     delay(10);
   }
