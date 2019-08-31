@@ -37,7 +37,7 @@ Module::Module(int a, int b, char c, int d, int e, int f, int g, int h, bool i, 
   plantType = j;
 }
 
-#define MODULE_COUNT 7
+#define MODULE_COUNT 8
 
 const int pumpPin = 12;
 const char systemId = "plant_system";
@@ -57,7 +57,7 @@ Module modules[MODULE_COUNT] = {
   Module(A4, 0, '5', 70, 6, 672, 165, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 bonsai
   Module(A5, 0, '6', 60, 7, 700, 372, 30, false, "cactus"),     // Checked sensor values 2/6/2019 Cactus
   Module(A6, 0, '7', 70, 8, 597, 287, 40, false, "peace_lily"), // Checked sensor values 8/5/2019 Peace Lily
-  //        Module(A7,0,'8', 50, 9, 882, 734),
+  Module(A7, 0, '8', 70, 9, 672, 312, 40, false, "scindapsus")
 };
 
 void setup()
@@ -193,7 +193,7 @@ void checkPlants() {
     }
     else
     {
-      Serial.println(",pmp=0>");
+       Serial.println(",pmp=0>");
     }
     delay(10);
   }
