@@ -50,14 +50,14 @@ const unsigned long  loopDelayNormalSecs = 600;
 const int loopDelayPumpmilli = 100;
 
 Module modules[MODULE_COUNT] = {
-  Module(A0, 0, '1', 70, 2, 622, 323, 40, false, "scindapsus"),
-  Module(A1, 0, '2', 70, 3, 640, 323, 40, false, "scindapsus"),    /// Checked sensor values 2/6/2019 Plant two - Hanging plant
-  Module(A2, 0, '3', 70, 4, 622, 312, 40, false, "scindapsus"),
-  Module(A3, 0, '4', 90, 5, 664, 339, 60, false, "tray"),    // Big plant bed
-  Module(A4, 0, '5', 70, 6, 672, 165, 40, false, "bonsai"),     // Checked sensor values 8/5/2019 bonsai
-  Module(A5, 0, '6', 60, 7, 700, 372, 30, false, "cactus"),     // Checked sensor values 2/6/2019 Cactus
-  Module(A6, 0, '7', 70, 8, 597, 287, 40, false, "peace_lily"), // Checked sensor values 8/5/2019 Peace Lily
-  Module(A7, 0, '8', 70, 9, 672, 312, 40, false, "scindapsus")
+  Module(A0, 0, '1', 70, 2, 622, 323, 30, false, "scindapsus"),
+  Module(A1, 0, '2', 70, 3, 640, 323, 30, false, "scindapsus"),    /// Checked sensor values 2/6/2019 Plant two - Hanging plant
+  Module(A2, 0, '3', 70, 4, 622, 312, 30, false, "scindapsus"),
+  Module(A3, 0, '4', 90, 5, 664, 339, 50, false, "tray"),    // Big plant bed
+  Module(A4, 0, '5', 70, 6, 672, 165, 20, false, "bonsai"),     // Checked sensor values 8/5/2019 bonsai
+  Module(A5, 0, '6', 60, 7, 700, 372, 10, false, "cactus"),     // Checked sensor values 2/6/2019 Cactus
+  Module(A6, 0, '7', 70, 8, 597, 287, 30, false, "peace_lily"), // Checked sensor values 8/5/2019 Peace Lily
+  Module(A7, 0, '8', 70, 9, 672, 312, 30, false, "scindapsus")
 };
 
 void setup()
